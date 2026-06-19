@@ -12,27 +12,34 @@ const userSchema = new mongoose.Schema({
         
     },
     email : {
+        required: [true, "email is required"],
         type : String,
-        unique : [true,"email is required"],
+        unique: true,
         lowercase : true,
         trim : true
 
     },
 
-    isVerified : {
+    isVerifiedEmail : {
         type : Boolean,
         default :false
     },
 
     mobileNumber : {    
             type : String,
-            unique : true
+            unique : true,
+            required: false,
+            sparse: true
     },
 
+    isVerifiedMobileNumber : {
+        type : Boolean,
+        default :false
+    },
     password : {
         type : String,
         required : [true, "password is required"],
-        minlength : [8, "Password must be at least 6 characters long"]
+        minlength : [8, "Password must be at least 8 characters long"]
     },
 
     role : {
