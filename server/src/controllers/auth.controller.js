@@ -5,8 +5,6 @@ import sessionModel from "../models/SessionModel.js"
 import bcrypt from "bcryptjs"
 import crypto from "crypto"
 import { sendEmailVerificationOtp } from "../utils/sendEmailOtp.js"
-import { IncomingMessage } from "http"
-import { decode } from "punycode"
 
 
 
@@ -79,6 +77,62 @@ export const handleregister = async (req, res) => {
 
 export const handleVerifyEmail = async (req,res ) => {
     
+    try {
+        const {email, otp} = req.body
+        console.log("OTP from request", otp)
+
+        const user = await userModel.findOne({email})
+        
+        if(!user)   {
+            return res.status(404).json({
+                success : false,
+                message : "Email is not registered"
+            })
+        }
+        if (user.isVerifiedEmail){
+            return res.status(400).json({
+                sucess : false,
+                message : "Email is already verified"
+            })
+
+        }
+
+        if (user.emailOtpExpiry < new Date()){
+            return res.json(400).json({
+                sucess : false,
+                message : "OTP expired,Please request a new one"
+            })
+        }
+
+        const otpMatch = await bcrypt.compare(String(otp), user.otp)
+        console.log("OTP match result:", otpMatch)
+        if (!otpMatch){
+            return res.status(400).json({
+                success : false,
+                message : "Invalid OTP"
+            })
+        }
+
+        user.isVerifiedEmail = true;
+        user.emailOtp = undefined;
+        user.emailOtpExpiry = undefined;
+
+        await user.save()
+
+        return res.status(200).json({
+            success : true,
+            message : "Account verified successfully"
+        })
+
+     } catch (err) {
+        console.log("Verify OTP error", err)
+        return res.status(500).json({
+            sucess : false,
+            message : "Internal server error"
+        })
+
+    }
+
 }
 
 export const handleResendEmailOtp = async (req, res) => {
@@ -190,6 +244,33 @@ export const handleLogin = async (req,res ) => {
 
 export const handleGetMe = async (req, res) =>  {
 
+    try {
+        const token = req.headers.authorization?.split(" ")[1]
+        if (!token){
+            return res.status(401).json({
+                success : false,
+                message : "Token not found"
+            })
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET)
+        const user = await userModel.findById(decoded.id)
+
+        return res.status(200).json({
+            success : true,
+            message : "User fetched successfully",
+            user : {
+                firstName : user.firstName,
+                lastName : user.lastName,
+                email : user.email,
+                mobileNumber : user.mobileNumber
+            }
+    })
+    } catch(err) {
+    console.error('getMe error:', err)
+    console.log(err)
+    return res.status(401).json({ success: false, message: 'Internal server error' })
+    }
 }
 
 export const handleRotateToken = async (req, res) =>    {
@@ -300,5 +381,56 @@ export const handleRotateToken = async (req, res) =>    {
 
 export const handleLogout = async (req, res) => {
 
+    try {
+        const refreshToken = req.cookies.refreshToken
+        if (!refreshToken){
+            return res.status(401).json({
+                success : true,
+                message : "Refresh token not found"
+            })
+        }
+        
+        const refreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex")
+
+        const session = await sessionModel.findOne({
+            refreshTokenHash,
+            revoked : false
+        })
+
+        if (!session){
+            return res.status(400).json({
+                success : false,
+                message : "Invalid Refresh token"
+            })
+        }
+
+        session.revoked = true;
+        await session.save()
+
+        res.clearCookie("refreshToken", refreshToken,{
+            httpOnly : true,
+            secure : process.env.NODE_ENV === "production",
+            sameSite : process.env.NODE_ENV === "production" ? 'none' : 'lax'
+        })
+
+        res.clearCookie("accessToken", accessToken,{
+            httpOnly : true,
+            secure : process.env.NODE_ENV === "production",
+            sameSite : process.env.NODE_ENV === "production" ? 'none' : 'lax'
+        })
+
+        return res.status(200).json({
+            sucess : true,
+            message : "logout successfully"
+        })
+        
+    } catch (err){
+        conole.log("logout error", err)
+        return res.status(500).json({
+            sucess : true,
+            message : "Internal server error"
+        })
+
+    }
 }
 
