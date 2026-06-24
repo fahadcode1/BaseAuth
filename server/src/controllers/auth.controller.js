@@ -4,8 +4,9 @@ import otpModel from "../models/otpModel.js"
 import sessionModel from "../models/SessionModel.js"
 import bcrypt from "bcryptjs"
 import crypto from "crypto"
+import jwt from 'jsonwebtoken';
 import { sendEmailVerificationOtp } from "../utils/sendEmailOtp.js"
-
+import { resetPasswordEmail } from "../utils/sendPassReset.js"
 
 
 
@@ -91,7 +92,7 @@ export const handleVerifyEmail = async (req,res ) => {
         }
         if (user.isVerifiedEmail){
             return res.status(400).json({
-                sucess : false,
+                success : false,
                 message : "Email is already verified"
             })
 
@@ -99,7 +100,7 @@ export const handleVerifyEmail = async (req,res ) => {
 
         if (user.emailOtpExpiry < new Date()){
             return res.json(400).json({
-                sucess : false,
+                success : false,
                 message : "OTP expired,Please request a new one"
             })
         }
@@ -127,7 +128,7 @@ export const handleVerifyEmail = async (req,res ) => {
      } catch (err) {
         console.log("Verify OTP error", err)
         return res.status(500).json({
-            sucess : false,
+            success : false,
             message : "Internal server error"
         })
 
@@ -136,11 +137,100 @@ export const handleVerifyEmail = async (req,res ) => {
 }
 
 export const handleResendEmailOtp = async (req, res) => {
+    try {
+        const {email} = req.body
+        const user = await userModel.findOne({email})
+        
+        //Check if email exists
+        if (!user) {
+            return res.status(400).json({
+                success: true,
+                message : "Email is not Registered, Please register email first"
+            })
+        }
+        //check if user is already verified
+        if (user.isVerified)    {
+            return res.status(400).json({
+                success : false,
+                message : "User is Already Verified"
+            })
+        }
+        //generate new otp
+        await sendVerificationOtp(user)
 
+
+        return res.status(200).json({
+            success : false,
+            message : "OTP has been sent on Email"
+        })
+
+    } catch(err){
+        console.error('Re-send OTP error', err)
+        console.log(err)
+        res.status(500).json({
+            success : true,
+            message : "Internal server error"
+        })
+
+    }
 }
 
 export const handleVerifyPhone = async (req,res ) => {
+    try  {
+        const {mobileNumber, otp} = req.body
+        console.log("OTP from request:", otp)
 
+        const user = await userModel.findOne({mobileNumber})
+        if (!user){
+            return res.status(404).json({
+                success : false,
+                message : "Mobile number is not registered"
+            })
+        }
+
+        if(user.isVerifiedMobileNumber){
+            return res.status(400).json({
+                success : false,
+                message : "Mobile number is already verified"
+            })
+        }
+
+        if (user.mobileNumberOtpExpiry < new Date()){
+            return res.status(400).json({
+                success : false,
+                message : "OTP expired,Please request a new one"
+            })
+        }
+   
+    const otpMatch = await bcrypt.compare(String(otp), user.mobileNumberOtp)
+    console.log("OTP match result:", otpMatch)
+
+    if (!otpMatch) {
+        return res.status(400).json({
+            success : false,
+            message : "Invalid OTP"
+        })
+    }
+    
+    user.isVerifiedMobileNumber = true;
+    user.mobileNumberOtp = undefined;
+    user.mobileNumberOtpExpiry = undefined;
+    await user.save()
+
+    return res.status(200).json({
+    sucess : true,
+    message : "Account verified successfully"
+    })
+
+    } catch(err) {
+        
+        console.error('Verify OTP Error :', err)
+        return res.status(500).json({
+            sucess: false,
+            message : "Internal server error"
+        })
+
+     }
 }
 
 export const handleLogin = async (req,res ) => {
@@ -242,36 +332,6 @@ export const handleLogin = async (req,res ) => {
     }
 }   
 
-export const handleGetMe = async (req, res) =>  {
-
-    try {
-        const token = req.headers.authorization?.split(" ")[1]
-        if (!token){
-            return res.status(401).json({
-                success : false,
-                message : "Token not found"
-            })
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET)
-        const user = await userModel.findById(decoded.id)
-
-        return res.status(200).json({
-            success : true,
-            message : "User fetched successfully",
-            user : {
-                firstName : user.firstName,
-                lastName : user.lastName,
-                email : user.email,
-                mobileNumber : user.mobileNumber
-            }
-    })
-    } catch(err) {
-    console.error('getMe error:', err)
-    console.log(err)
-    return res.status(401).json({ success: false, message: 'Internal server error' })
-    }
-}
 
 export const handleRotateToken = async (req, res) =>    {
 
@@ -420,7 +480,7 @@ export const handleLogout = async (req, res) => {
         })
 
         return res.status(200).json({
-            sucess : true,
+            success : true,
             message : "logout successfully"
         })
         
@@ -433,4 +493,5 @@ export const handleLogout = async (req, res) => {
 
     }
 }
+
 
