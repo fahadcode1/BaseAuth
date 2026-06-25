@@ -36,14 +36,53 @@ export const handleGetMe = async (req, res) => {
     }
 }
 
-export const handleChangeName = async (req, res) => {
-    //logic
+export const handleChangeEmail = async (req, res) => {
+    
+    try {
+        const userId = req.user.userId
+        const {newEmail} = req.body
+        if (!newEmail ) {
+            return res.status(404).json({
+                success : false,
+                message : "email or userId not found"
+            })
+        }
+        const newEmailCheck = await userModel.findOne({ email: newEmail })
+        if (newEmailCheck){
+            return res.status(400).json({
+                success : false,
+                message : "Email is already registered"    
+            })
+        }
+
+        const user = await userModel.findById(userId)
+        if (!user){
+            return res.status(404).json({
+                success : false,
+                message : "User not found"
+            })
+        }
+        user.email = newEmail;
+        await user.save()
+
+        return res.status(200).json({
+            success : true,
+            message : "Email changed successfully"
+        })
+
+    } catch (err){
+        console.error('changeEmail error:', err)
+        return res.status(500).json({
+            success : false,
+            message : "Internal server error"
+        })
+        
+    }
 
 }
 
-export const handleChangeEmail = async (req, res) =>    {
-
-    //logic
+export const handleChangeName = async (req, res) =>    {
+    
 }
 
 export const handleChangeMobileNumber = async (req, res) => {
