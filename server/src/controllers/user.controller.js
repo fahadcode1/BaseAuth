@@ -1,5 +1,7 @@
 import userModel from "../models/userModel.js"
 import jwt from 'jsonwebtoken'
+import { sendEmailVerificationOtp } from "../utils/sendEmailOtp.js"
+import { use } from "react"
 
 
 export const handleGetMe = async (req, res) => {
@@ -81,16 +83,138 @@ export const handleChangeEmail = async (req, res) => {
 
 }
 
-export const handleChangeName = async (req, res) =>    {
-    
+export const handleChangeName = async (req, res) => {
+    try {
+        const userId = req.user.userId
+
+        const newFirstName = req.body.newFirstName?.trim()
+        const newLastName  = req.body.newLastName?.trim()
+
+        if (!newFirstName || !newLastName) {
+            return res.status(400).json({
+                success : false,
+                message : "Names not provided"
+            })
+        }
+
+        const user = await userModel.findById(userId)
+
+        if (!user) {
+            return res.status(404).json({
+                success : false,
+                message : "User not found"
+            })
+        }
+
+        user.firstName = newFirstName
+        user.lastName  = newLastName
+        await user.save()
+
+        return res.status(200).json({
+            success : true,
+            message : "Name updated successfully"
+        })
+
+    } catch (err) {
+        console.error("Change name Error :", err)
+        return res.status(500).json({
+            success : false,
+            message : "Internal server error"
+        })
+    }
 }
+
+export const handleSendEmailOtp = async (req, res) => {
+    try {
+        const userId = req.user.userId
+
+        const user = await userModel.findById(userId)
+
+        if (!user) {
+            return res.status(404).json({
+                success : false,
+                message : "User not found"
+            })
+        }
+
+        await sendEmailVerificationOtp(user)
+
+        return res.status(200).json({
+            success : true,
+            message : "OTP sent to your registered email"
+        })
+
+    } catch (err) {
+        console.error("Send Email OTP Error :", err)
+        return res.status(500).json({
+            success : false,
+            message : "Internal server error"
+        })
+    }
+}
+
 
 export const handleChangeMobileNumber = async (req, res) => {
+    try {
+        const userId = req.user.userId
+        const { newMobileNumber } = req.body
 
-    //logic
+        if (!newMobileNumber) {
+            return res.status(400).json({
+                success : false,
+                message : "Mobile number not provided"
+            })
+        }
+
+        const user = await userModel.findById(userId)
+
+        if (!user) {
+            return res.status(404).json({
+                success : false,
+                message : "User not found"
+            })
+        }
+
+        user.mobileNumber = newMobileNumber
+        await user.save()
+
+        return res.status(200).json({
+            success : true,
+            message : "Mobile number updated successfully"
+        })
+
+    } catch (err) {
+        console.error("Change Mobile Number Error :", err)
+        return res.status(500).json({
+            success : false,
+            message : "Internal server error"
+        })
+    }
 }
 
-export const handleDeleteAccount = async (req, res) =>  {
+export const handleDeleteAccount = async (req, res) => {
+    try {
+        const userId = req.user.userId
 
-    //logic
+        const user = await userModel.findByIdAndDelete(userId)
+
+        if (!user) {
+            return res.status(404).json({
+                success : false,
+                message : "User not found"
+            })
+        }
+
+        return res.status(200).json({
+            success : true,
+            message : "Account deleted successfully"
+        })
+
+    } catch (err) {
+        console.error("Delete Account Error :", err)
+        return res.status(500).json({
+            success : false,
+            message : "Internal server error"
+        })
+    }
 }
