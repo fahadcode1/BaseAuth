@@ -1,7 +1,7 @@
 import express from "express"
 import {handleChangePassword,
         handleForgotPassword, 
-        handleResetPassword } from "../controllers/password.controller"        
+        handleResetPassword } from "../controllers/password.controller.js"        
 
 const passwordRoutes = express.Router()
 

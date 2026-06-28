@@ -1,9 +1,12 @@
 import bcrypt from "bcryptjs"
+import userModel from "../models/userModel"
+import { Request, Response, NextFunction } from "express"
+import { JwtPayload } from "jsonwebtoken"
 
-export const verifyEmailOTP = async (req, res, next) => {
+export const verifyEmailOTP = async (req : Request, res : Response, next: NextFunction) => {
     try {
         const otp = req.body.otp
-        const userId = req.user.userId
+        const userId = (req.user as JwtPayload).userId 
 
         if (!otp) {
             return res.status(400).json({
@@ -21,10 +24,17 @@ export const verifyEmailOTP = async (req, res, next) => {
             })
         }
 
-        if (user.emailOtpExpiry < Date.now()) {
+        if (!user.emailOtpExpiry || user.emailOtpExpiry < new Date(Date.now())) {
             return res.status(400).json({
                 success : false,
                 message : "OTP expired"
+            })
+        }
+
+        if (!user.emailOtp) {
+        return res.status(400).json({
+        success: false,
+        message: "OTP not found, please request a new one"
             })
         }
 

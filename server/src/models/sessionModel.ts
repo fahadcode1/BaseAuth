@@ -1,7 +1,15 @@
-import mongoose, { model } from "mongoose";
+import mongoose, { Document, Schema, Types  } from "mongoose"
 
 
-const sessionSchema = new mongoose.Schema({
+export interface ISession extends Document {
+  user: Types.ObjectId
+  refreshTokenHash: string
+  ip: string
+  userAgent: string
+  revoked: boolean
+}
+
+const sessionSchema = new Schema<ISession>({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users",
@@ -27,7 +35,7 @@ const sessionSchema = new mongoose.Schema({
     timestamps: true
 })
 
-const sessionModel = mongoose.model("sessions", sessionSchema)
+const sessionModel = mongoose.model<ISession>("sessions", sessionSchema)
 
 
 export default sessionModel

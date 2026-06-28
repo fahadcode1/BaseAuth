@@ -1,10 +1,10 @@
-import bcrypt from "bcryptjs"
-import crypto from "crypto"
+import { Request, Response, NextFunction } from "express";
 import jwt from 'jsonwebtoken';
+import { JwtPayload } from "jsonwebtoken"
 
 
 
-export const authMiddleware = async (req, res, next) =>   {
+export const authMiddleware = async (req : Request, res : Response, next:NextFunction) =>   {
     try {
         const token = req.headers.authorization?.split(" ")[1] 
 
@@ -14,7 +14,7 @@ export const authMiddleware = async (req, res, next) =>   {
                 message : "Token not found"
             })
         }
-        const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET)
+        const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET as string) as JwtPayload
         req.user = {userId : decoded.id}
         next()
 

@@ -3,14 +3,13 @@ import { verifyEmailOTP } from "../middleware/verifyEmailOTP.middleware.js"
 import {handleGetMe, 
         handleChangeName,
         handleChangeEmail,
-        handleChangeMobileNumber,
         handleSendEmailOtp,
         handleDeleteAccount,
         handleChangeMobileNumber
         
     } from "../controllers/user.controller.js"
 import { authMiddleware } from "../middleware/auth.middleware.js"
-import { verify } from "node:crypto"
+
 
 
 const userRoutes = express.Router()
