@@ -1,6 +1,6 @@
 import userModel from "../models/userModel.js"
 import jwt from 'jsonwebtoken'
-import { sendEmailVerificationOtp } from "../utils/sendEmailOtp.js"
+import { sendEmailVerificationOtp } from "../utils/sendEmailOtp"
 import { Request, Response } from "express"
 import { JwtPayload } from "jsonwebtoken"
 

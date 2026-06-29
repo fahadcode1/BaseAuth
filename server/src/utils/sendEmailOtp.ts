@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
-import { IUser } from "../models/userModel.js"
+import { IUser } from "../models/userModel"
 
 // generate 6 digit otp
 const generateOtp = () => {
