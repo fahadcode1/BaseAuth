@@ -9,11 +9,11 @@ export interface IUser extends Document {
   isVerifiedMobileNumber: boolean
   password: string
   role: "user" | "moderator" | "admin" | "leadAdmin" | "manager"
-  emailOtp?: string
-  emailOtpExpiry?: Date
-  mobileNumberOtp?: string
-  mobileNumberOtpExpiry?: Date
-  resetPasswordToken?: string
+  emailOtp?: string | undefined
+  emailOtpExpiry?: Date | undefined
+  mobileNumberOtp?: string | undefined
+  mobileNumberOtpExpiry?: Date | undefined
+  resetPasswordToken?: string | undefined
   resetPasswordExpiresAt?: Date
 }
 

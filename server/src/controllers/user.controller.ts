@@ -1,10 +1,11 @@
 import userModel from "../models/userModel.js"
 import jwt from 'jsonwebtoken'
 import { sendEmailVerificationOtp } from "../utils/sendEmailOtp.js"
-import { use } from "react"
+import { Request, Response } from "express"
+import { JwtPayload } from "jsonwebtoken"
 
 
-export const handleGetMe = async (req, res) => {
+export const handleGetMe = async (req : Request, res : Response) => {
     try {
         const token = req.headers.authorization?.split(" ")[1]
 
@@ -15,9 +16,14 @@ export const handleGetMe = async (req, res) => {
             })
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET)
+        const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET as string) as JwtPayload
         const user = await userModel.findById(decoded.id)
-
+        if (!user){
+            return res.status(400).json({
+                success : false,
+                message : "User not found"
+            })
+        }
         return res.status(200).json({
             success: true,
             message: "User fetched successfully",
@@ -38,9 +44,12 @@ export const handleGetMe = async (req, res) => {
     }
 }
 
-export const handleChangeEmail = async (req, res) => {
+export const handleChangeEmail = async (req : Request, res : Response) => {
     
     try {
+        if (!req.user || typeof req.user === "string") {
+            return res.status(401).json({ success: false, message: "Unauthorized" })
+        }
         const userId = req.user.userId
         const {newEmail} = req.body
         if (!newEmail ) {
@@ -83,9 +92,14 @@ export const handleChangeEmail = async (req, res) => {
 
 }
 
-export const handleChangeName = async (req, res) => {
+export const handleChangeName = async (req : Request, res : Response) => {
     try {
+        if (!req.user || typeof req.user === "string") {
+        return res.status(401).json({ success: false, message: "Unauthorized" })
+        }
+
         const userId = req.user.userId
+        
 
         const newFirstName = req.body.newFirstName?.trim()
         const newLastName  = req.body.newLastName?.trim()
@@ -124,8 +138,11 @@ export const handleChangeName = async (req, res) => {
     }
 }
 
-export const handleSendEmailOtp = async (req, res) => {
+export const handleSendEmailOtp = async (req : Request, res : Response) => {
     try {
+        if (!req.user || typeof req.user === "string") {
+        return res.status(401).json({ success: false, message: "Unauthorized" })
+        }
         const userId = req.user.userId
 
         const user = await userModel.findById(userId)
@@ -154,9 +171,13 @@ export const handleSendEmailOtp = async (req, res) => {
 }
 
 
-export const handleChangeMobileNumber = async (req, res) => {
+export const handleChangeMobileNumber = async (req : Request, res : Response) => {
     try {
+        if (!req.user || typeof req.user === "string") {
+        return res.status(401).json({ success: false, message: "Unauthorized" })
+        }
         const userId = req.user.userId
+
         const { newMobileNumber } = req.body
 
         if (!newMobileNumber) {
@@ -192,8 +213,11 @@ export const handleChangeMobileNumber = async (req, res) => {
     }
 }
 
-export const handleDeleteAccount = async (req, res) => {
+export const handleDeleteAccount = async (req : Request, res : Response) => {
     try {
+        if (!req.user || typeof req.user === "string") {
+        return res.status(401).json({ success: false, message: "Unauthorized" })
+        }   
         const userId = req.user.userId
 
         const user = await userModel.findByIdAndDelete(userId)

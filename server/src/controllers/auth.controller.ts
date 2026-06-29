@@ -1,17 +1,17 @@
-import express from "express"
-import userModel from "../models/userModel.js"
-import otpModel from "../models/otpModel.js"
-import sessionModel from "../models/SessionModel.js"
+
+import userModel from "../models/userModel"
+import sessionModel from "../models/sessionModel"
 import bcrypt from "bcryptjs"
 import crypto from "crypto"
 import jwt from 'jsonwebtoken';
-import { sendEmailVerificationOtp } from "../utils/sendEmailOtp.js"
-import { resetPasswordEmail } from "../utils/sendPassReset.js"
+import { sendEmailVerificationOtp } from "../utils/sendEmailOtp"
+import { Request, Response } from "express"
+import { JwtPayload } from "jsonwebtoken"
 
 
 
 
-export const handleregister = async (req, res) => {
+export const handleregister = async (req : Request, res : Response) => {
     try {
 
             //get data from user
@@ -76,7 +76,7 @@ export const handleregister = async (req, res) => {
     }
 }
 
-export const handleVerifyEmail = async (req,res ) => {
+export const handleVerifyEmail = async (req : Request, res : Response ) => {
     
     try {
         const {email, otp} = req.body
@@ -98,14 +98,17 @@ export const handleVerifyEmail = async (req,res ) => {
 
         }
 
-        if (user.emailOtpExpiry < new Date()){
+        if (!user.emailOtpExpiry || user.emailOtpExpiry < new Date(Date.now())){
             return res.json(400).json({
                 success : false,
                 message : "OTP expired,Please request a new one"
             })
         }
 
-        const otpMatch = await bcrypt.compare(String(otp), user.otp)
+        if (!user.emailOtp) {
+            return res.status(400).json({ success: false, message: "OTP not found" })
+        }
+        const otpMatch = await bcrypt.compare(String(otp), user.emailOtp)
         console.log("OTP match result:", otpMatch)
         if (!otpMatch){
             return res.status(400).json({
@@ -136,7 +139,7 @@ export const handleVerifyEmail = async (req,res ) => {
 
 }
 
-export const handleResendEmailOtp = async (req, res) => {
+export const handleResendEmailOtp = async (req : Request, res : Response) => {
     try {
         const {email} = req.body
         const user = await userModel.findOne({email})
@@ -149,14 +152,14 @@ export const handleResendEmailOtp = async (req, res) => {
             })
         }
         //check if user is already verified
-        if (user.isVerified)    {
+        if (user.isVerifiedEmail)    {
             return res.status(400).json({
                 success : false,
                 message : "User is Already Verified"
             })
         }
         //generate new otp
-        await sendVerificationOtp(user)
+        await sendEmailVerificationOtp(user)
 
 
         return res.status(200).json({
@@ -175,7 +178,7 @@ export const handleResendEmailOtp = async (req, res) => {
     }
 }
 
-export const handleVerifyPhone = async (req,res ) => {
+export const handleVerifyPhone = async (req : Request, res : Response) => {
     try  {
         const {mobileNumber, otp} = req.body
         console.log("OTP from request:", otp)
@@ -195,13 +198,19 @@ export const handleVerifyPhone = async (req,res ) => {
             })
         }
 
-        if (user.mobileNumberOtpExpiry < new Date()){
+        if (!user.mobileNumberOtpExpiry || user.mobileNumberOtpExpiry < new Date(Date.now())){
             return res.status(400).json({
                 success : false,
                 message : "OTP expired,Please request a new one"
             })
         }
-   
+        
+    if (!user.mobileNumberOtp){
+        return res.status(400).json({
+            success : false,
+            message: "OTP not found"
+        })
+    }    
     const otpMatch = await bcrypt.compare(String(otp), user.mobileNumberOtp)
     console.log("OTP match result:", otpMatch)
 
@@ -233,7 +242,7 @@ export const handleVerifyPhone = async (req,res ) => {
      }
 }
 
-export const handleLogin = async (req,res ) => {
+export const handleLogin = async (req : Request, res : Response) => {
         
     try {
         const {email,mobileNumber, password} = req.body 
@@ -279,24 +288,25 @@ export const handleLogin = async (req,res ) => {
             })
         }
 
-        const refreshToken = jwt.sign(
-            {id : user._id, sessionId : session_id},
-            process.env.JWT_REFRESH_SECRET,
+        const session = await sessionModel.create({
+            user : user._id,
+            ip : req.ip,
+            userAgent : req.headers["user-agent"]
+        })
+        const refreshToken : string = jwt.sign(
+            {id : user._id, sessionId : session._id},
+            process.env.JWT_REFRESH_SECRET as string,
             {expiresIn : "7d"}
         )
 
         const refreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex")
+        await session.updateOne({ refreshTokenHash })
 
-        const session = await sessionModel.create({
-            user : user._id,
-            refreshTokenHash,
-            ip : req.ip,
-            userAgent : req.headers["user-agent"]
-        })
+
 
         const accessToken = jwt.sign(
             {id : user._id, sessionId : session._id},
-            process.env.JWT_ACCESS_SECRET,
+            process.env.JWT_ACCESS_SECRET as string,
             {expiresIn : "15m"} 
         )
 
@@ -333,7 +343,7 @@ export const handleLogin = async (req,res ) => {
 }   
 
 
-export const handleRotateToken = async (req, res) =>    {
+export const handleRotateToken = async (req : Request, res : Response) =>    {
 
     try {
         const refreshToken = req.cookies.refreshToken
@@ -347,7 +357,7 @@ export const handleRotateToken = async (req, res) =>    {
 
         let decoded
         try {
-             decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET)
+            decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as JwtPayload
         } catch (err)   {
             return res.status(401).json({
                 success : false,
@@ -389,7 +399,7 @@ export const handleRotateToken = async (req, res) =>    {
         // generate acessToken
         const accessToken = jwt.sign(
             { id: decoded.id, sessionId: session._id },
-            process.env.JWT_ACCESS_SECRET,
+            process.env.JWT_ACCESS_SECRET as string,
             {expiresIn : "15m"}
         )
         // send in cookie
@@ -404,7 +414,7 @@ export const handleRotateToken = async (req, res) =>    {
 
         const newRefreshToken = jwt.sign(
             {id : decoded.id, sessionId : session._id},
-            process.env.JWT_REFRESH_SECRET,
+            process.env.JWT_REFRESH_SECRET as string,
             {expiresIn : "7d"}
         )
 
@@ -421,11 +431,17 @@ export const handleRotateToken = async (req, res) =>    {
         await session.save()
 
         const user = await userModel.findById(decoded.id).select("-password")
+        if (!user) {
+            return res.status(400).json({
+                success : false,
+                message : "User not found"
+            })
+        }
         return res.status(200).json({
             success : true,
             message : "Access token refreshed successfully",
             user: {
-                name: user.name,
+                name: user.firstName,
                 email: user.email
             }
         })
@@ -439,7 +455,7 @@ export const handleRotateToken = async (req, res) =>    {
     }
 }
 
-export const handleLogout = async (req, res) => {
+export const handleLogout = async (req : Request, res : Response) => {
 
     try {
         const refreshToken = req.cookies.refreshToken
@@ -467,16 +483,16 @@ export const handleLogout = async (req, res) => {
         session.revoked = true;
         await session.save()
 
-        res.clearCookie("refreshToken", refreshToken,{
-            httpOnly : true,
-            secure : process.env.NODE_ENV === "production",
-            sameSite : process.env.NODE_ENV === "production" ? 'none' : 'lax'
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax'
         })
 
-        res.clearCookie("accessToken", accessToken,{
-            httpOnly : true,
-            secure : process.env.NODE_ENV === "production",
-            sameSite : process.env.NODE_ENV === "production" ? 'none' : 'lax'
+        res.clearCookie("accessToken", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax'
         })
 
         return res.status(200).json({
@@ -485,9 +501,9 @@ export const handleLogout = async (req, res) => {
         })
         
     } catch (err){
-        conole.log("logout error", err)
+        console.log("logout error", err)
         return res.status(500).json({
-            sucess : true,
+            success : true,
             message : "Internal server error"
         })
 

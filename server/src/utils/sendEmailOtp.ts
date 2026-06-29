@@ -1,13 +1,14 @@
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
+import { IUser } from "../models/userModel.js"
 
 // generate 6 digit otp
 const generateOtp = () => {
     return crypto.randomInt(100000, 1000000).toString();
 };
 
-export const sendEmailVerificationOtp = async (user) => {
+export const sendEmailVerificationOtp = async (user: IUser) => {
 
     const transporter = nodemailer.createTransport({
         service: "gmail",

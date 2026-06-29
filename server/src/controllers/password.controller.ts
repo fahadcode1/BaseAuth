@@ -1,10 +1,12 @@
 import userModel from "../models/userModel.js"
 import bcrypt from "bcryptjs"
 import crypto from "crypto"
-import { resetPasswordEmail } from "../utils/sendPassReset.js"
+import { Request, Response } from "express"
+import { sendResetPasswordEmail } from "../utils/sendPassReset"
 
 
-export const handleForgotPassword = async (req, res) => {
+
+export const handleForgotPassword = async (req : Request, res : Response) => {
     try {
         const { email, mobileNumber } = req.body
 
@@ -33,11 +35,11 @@ export const handleForgotPassword = async (req, res) => {
         const resetPasswordTokenHash = crypto.createHash("sha256").update(resetPasswordToken).digest("hex")
 
         user.resetPasswordToken = resetPasswordTokenHash
-        user.resetPasswordExpiresAt = Date.now() + 15 * 60 * 1000
+        user.resetPasswordExpiresAt = new Date(Date.now() + 15 * 60 * 1000)
         await user.save()
 
         const resetPasswordLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetPasswordToken}`
-        await resetPasswordEmail(user.email, user.name, resetPasswordLink)
+        await sendResetPasswordEmail(user.email, user.firstName, user.lastName, resetPasswordLink)
 
         return res.status(200).json({
             success: true,
@@ -49,16 +51,18 @@ export const handleForgotPassword = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Internal server error",
-            error: err.message
+            error: err instanceof Error ? err.message : "An error occurred" 
+
         })
     }
 }
 
-export const handleResetPassword = async (req, res) => {
+export const handleResetPassword = async (req : Request, res : Response) => {
     try {
-        const resetToken = req.query.token
+        const resetToken = req.query.token as string
         const { password: newPassword } = req.body
 
+        
         const resetTokenHash = crypto.createHash("sha256").update(resetToken).digest("hex")
 
         const user = await userModel.findOne({
@@ -93,7 +97,3 @@ export const handleResetPassword = async (req, res) => {
     }
 }
 
-export const handleChangePassword = async (req, res) => {
-    
-    //logic
-}
