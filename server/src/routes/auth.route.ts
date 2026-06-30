@@ -6,7 +6,7 @@ import{ handleregister,
         handleVerifyPhone,
         handleLogout,
         
-        } from "../controllers/auth.controller.js"
+        } from "../controllers/auth.controller"
 
 
 const authRoutes = express.Router()
@@ -16,3 +16,5 @@ authRoutes.post('/login', handleLogin)
 authRoutes.post('/rotate-token', handleRotateToken)
 authRoutes.post('/verify-email', handleVerifyEmail)
 authRoutes.post('/logout', handleLogout)
+
+export default authRoutes

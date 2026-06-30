@@ -14,7 +14,7 @@ export const authMiddleware = async (req : Request, res : Response, next:NextFun
                 message : "Token not found"
             })
         }
-        const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET as string) as JwtPayload
+        const decoded = jwt.verify(token, process.env.jwtAccessSecret as string) as JwtPayload
         req.user = {userId : decoded.id}
         next()
 

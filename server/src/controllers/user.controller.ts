@@ -1,4 +1,4 @@
-import userModel from "../models/userModel.js"
+import userModel from "../models/userModel"
 import jwt from 'jsonwebtoken'
 import { sendEmailVerificationOtp } from "../utils/sendEmailOtp"
 import { Request, Response } from "express"
@@ -16,7 +16,7 @@ export const handleGetMe = async (req : Request, res : Response) => {
             })
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET as string) as JwtPayload
+        const decoded = jwt.verify(token, process.env.jwtAccessSecret as string) as JwtPayload
         const user = await userModel.findById(decoded.id)
         if (!user){
             return res.status(400).json({

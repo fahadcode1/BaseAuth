@@ -1,5 +1,5 @@
 import express from "express"
-import { verifyEmailOTP } from "../middleware/verifyEmailOTP.middleware.js"
+import { verifyEmailOTP } from "../middleware/verifyEmailOTP.middleware"
 import {handleGetMe, 
         handleChangeName,
         handleChangeEmail,
@@ -7,8 +7,8 @@ import {handleGetMe,
         handleDeleteAccount,
         handleChangeMobileNumber
         
-    } from "../controllers/user.controller.js"
-import { authMiddleware } from "../middleware/auth.middleware.js"
+    } from "../controllers/user.controller"
+import { authMiddleware } from "../middleware/auth.middleware"
 
 
 
@@ -20,3 +20,5 @@ userRoutes.patch('/change-mobile', authMiddleware, verifyEmailOTP, handleChangeM
 userRoutes.patch('/change-name', authMiddleware, handleChangeName)
 userRoutes.patch('/change-email', authMiddleware, handleChangeEmail)
 userRoutes.delete('/delete-account', authMiddleware, handleDeleteAccount)
+
+export default userRoutes

@@ -295,7 +295,7 @@ export const handleLogin = async (req : Request, res : Response) => {
         })
         const refreshToken : string = jwt.sign(
             {id : user._id, sessionId : session._id},
-            process.env.JWT_REFRESH_SECRET as string,
+            process.env.jwtRefreshSecret as string,
             {expiresIn : "7d"}
         )
 
@@ -306,7 +306,7 @@ export const handleLogin = async (req : Request, res : Response) => {
 
         const accessToken = jwt.sign(
             {id : user._id, sessionId : session._id},
-            process.env.JWT_ACCESS_SECRET as string,
+            process.env.jwtAccessSecret as string,
             {expiresIn : "15m"} 
         )
 
@@ -357,7 +357,7 @@ export const handleRotateToken = async (req : Request, res : Response) =>    {
 
         let decoded
         try {
-            decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as JwtPayload
+            decoded = jwt.verify(refreshToken, process.env.jwtRefreshSecret as string) as JwtPayload
         } catch (err)   {
             return res.status(401).json({
                 success : false,
@@ -399,7 +399,7 @@ export const handleRotateToken = async (req : Request, res : Response) =>    {
         // generate acessToken
         const accessToken = jwt.sign(
             { id: decoded.id, sessionId: session._id },
-            process.env.JWT_ACCESS_SECRET as string,
+            process.env.jwtAccessSecret as string,
             {expiresIn : "15m"}
         )
         // send in cookie
@@ -414,7 +414,7 @@ export const handleRotateToken = async (req : Request, res : Response) =>    {
 
         const newRefreshToken = jwt.sign(
             {id : decoded.id, sessionId : session._id},
-            process.env.JWT_REFRESH_SECRET as string,
+            process.env.jwtRefreshSecret as string,
             {expiresIn : "7d"}
         )
 
