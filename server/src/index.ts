@@ -1,4 +1,4 @@
-import config from './config/config'
+import cookieParser from "cookie-parser"
 import express from 'express'
 import type {Express} from 'express'
 import { connectDb } from './lib/db'
@@ -12,6 +12,7 @@ dns.setServers(["1.1.1.1", "8.8.8.8"])
 const PORT = 8000
 const app:Express = express()
 app.use(express.json())
+app.use(cookieParser())
 
 app.use("/api/auth", authRoutes)
 app.use("/api/auth", passwordRoutes)

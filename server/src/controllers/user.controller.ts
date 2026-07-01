@@ -1,3 +1,4 @@
+import config from '../config/config'
 import userModel from "../models/userModel"
 import jwt from 'jsonwebtoken'
 import { sendEmailVerificationOtp } from "../utils/sendEmailOtp"
@@ -7,7 +8,7 @@ import { JwtPayload } from "jsonwebtoken"
 
 export const handleGetMe = async (req : Request, res : Response) => {
     try {
-        const token = req.headers.authorization?.split(" ")[1]
+        const token = req.cookies?.accessToken
 
         if (!token) {
             return res.status(401).json({
@@ -16,7 +17,7 @@ export const handleGetMe = async (req : Request, res : Response) => {
             })
         }
 
-        const decoded = jwt.verify(token, process.env.jwtAccessSecret as string) as JwtPayload
+        const decoded = jwt.verify(token, config.jwtAccessSecret as string) as JwtPayload
         const user = await userModel.findById(decoded.id)
         if (!user){
             return res.status(400).json({

@@ -1,5 +1,6 @@
-
+import config from '../config/config'
 import userModel from "../models/userModel"
+import mongoose from "mongoose"
 import sessionModel from "../models/sessionModel"
 import bcrypt from "bcryptjs"
 import crypto from "crypto"
@@ -242,105 +243,104 @@ export const handleVerifyPhone = async (req : Request, res : Response) => {
      }
 }
 
-export const handleLogin = async (req : Request, res : Response) => {
-        
+export const handleLogin = async (req: Request, res: Response) => {
     try {
-        const {email,mobileNumber, password} = req.body 
+        const { email, mobileNumber, password } = req.body
 
         if (!password || (!email && !mobileNumber)) {
             return res.status(400).json({
-                success : false,
-                message : "Email or mobile number, and password are required"
+                success: false,
+                message: "Email or mobile number, and password are required"
             })
         }
 
         const user = await userModel.findOne({
-            $or : [
-                ...(email ? [{email}] : []),
-                ...(mobileNumber? [{mobileNumber}] : [])
+            $or: [
+                ...(email ? [{ email }] : []),
+                ...(mobileNumber ? [{ mobileNumber }] : [])
             ]
         })
 
-        if (!user){
+        if (!user) {
             return res.status(401).json({
-                success : false,
-                message :"Email or Mobile Number is not registered"
+                success: false,
+                message: "Email or Mobile Number is not registered"
             })
         }
 
-        if (!user.isVerifiedEmail){
+        if (!user.isVerifiedEmail) {
             await sendEmailVerificationOtp(user)
 
             return res.status(403).json({
-                success : false,
-                message : "Email not verified. OTP sent to your email.",
-                email : user.email,
+                success: false,
+                message: "Email not verified. OTP sent to your email.",
+                email: user.email,
                 redirectTo: '/verify-email'
             })
         }
 
         const isValidPassword = await bcrypt.compare(password, user.password)
 
-        if (!isValidPassword){
+        if (!isValidPassword) {
             return res.status(401).json({
-                success : false,
-                message : "Invalid credentials"
+                success: false,
+                message: "Invalid credentials"
             })
         }
 
-        const session = await sessionModel.create({
-            user : user._id,
-            ip : req.ip,
-            userAgent : req.headers["user-agent"]
-        })
-        const refreshToken : string = jwt.sign(
-            {id : user._id, sessionId : session._id},
-            process.env.jwtRefreshSecret as string,
-            {expiresIn : "7d"}
+        const sessionId = new mongoose.Types.ObjectId()
+
+        const refreshToken: string = jwt.sign(
+            { id: user._id, sessionId },
+            config.jwtRefreshSecret as string,
+            { expiresIn: "7d" }
         )
 
         const refreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex")
-        await session.updateOne({ refreshTokenHash })
 
-
+        const session = await sessionModel.create({
+            _id: sessionId,
+            user: user._id,
+            ip: req.ip,
+            userAgent: req.headers["user-agent"],
+            refreshTokenHash
+        })
 
         const accessToken = jwt.sign(
-            {id : user._id, sessionId : session._id},
-            process.env.jwtAccessSecret as string,
-            {expiresIn : "15m"} 
+            { id: user._id, sessionId: session._id },
+            config.jwtAccessSecret as string,
+            { expiresIn: "15m" }
         )
 
         res.cookie("accessToken", accessToken, {
-            httpOnly : true,
-            secure : process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax', 
-            maxAge : 15 * 60 * 1000
+            httpOnly: true,
+            secure: config.nodeEnv === "production",
+            sameSite: config.nodeEnv === "production" ? 'none' : 'lax',
+            maxAge: 15 * 60 * 1000
         })
 
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            secure: config.nodeEnv === "production",
+            sameSite: config.nodeEnv === "production" ? "none" : "lax",
             maxAge: 7 * 24 * 60 * 60 * 1000
         })
 
         return res.status(200).json({
-            success : true,
-            message : "Logged in Successfully",
-            user : {
-                user : user.firstName,
-                Email : user.email
+            success: true,
+            message: "Logged in Successfully",
+            user: {
+                user: user.firstName,
+                Email: user.email
             }
         })
 
     } catch (err) {
-    
-    console.error('Login error:', err)
-    console.log(err)
-    return res.status(500).json({ success: false, message: 'Internal server error' })
-
+        console.error('Login error:', err)
+        console.log(err)
+        return res.status(500).json({ success: false, message: 'Internal server error' })
     }
-}   
+}
 
 
 export const handleRotateToken = async (req : Request, res : Response) =>    {
@@ -357,7 +357,7 @@ export const handleRotateToken = async (req : Request, res : Response) =>    {
 
         let decoded
         try {
-            decoded = jwt.verify(refreshToken, process.env.jwtRefreshSecret as string) as JwtPayload
+            decoded = jwt.verify(refreshToken, config.jwtRefreshSecret as string) as JwtPayload
         } catch (err)   {
             return res.status(401).json({
                 success : false,
@@ -399,14 +399,14 @@ export const handleRotateToken = async (req : Request, res : Response) =>    {
         // generate acessToken
         const accessToken = jwt.sign(
             { id: decoded.id, sessionId: session._id },
-            process.env.jwtAccessSecret as string,
+            config.jwtAccessSecret as string,
             {expiresIn : "15m"}
         )
         // send in cookie
         res.cookie("accessToken", accessToken, {
             httpOnly : true,
-            secure : process.env.NODE_ENV === "production",
-            sameSite : process.env.NODE_ENV === "production" ? "none" : "lax",
+            secure : config.nodeEnv === "production",
+            sameSite : config.nodeEnv === "production" ? "none" : "lax",
             maxAge : 15 * 60 * 1000
         })
 
@@ -414,7 +414,7 @@ export const handleRotateToken = async (req : Request, res : Response) =>    {
 
         const newRefreshToken = jwt.sign(
             {id : decoded.id, sessionId : session._id},
-            process.env.jwtRefreshSecret as string,
+            config.jwtRefreshSecret as string,
             {expiresIn : "7d"}
         )
 
@@ -422,8 +422,8 @@ export const handleRotateToken = async (req : Request, res : Response) =>    {
 
         res.cookie("refreshToken", newRefreshToken,{
             httpOnly : true,
-            secure : process.env.NODE_ENV === "production",
-            sameSite : process.env.NODE_ENV === "production" ? "none" : "lax",
+            secure : config.nodeEnv === "production",
+            sameSite : config.nodeEnv === "production" ? "none" : "lax",
             maxAge : 7 * 24 * 60 * 60 * 1000
         })
 
@@ -485,14 +485,14 @@ export const handleLogout = async (req : Request, res : Response) => {
 
         res.clearCookie("refreshToken", {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax'
+            secure: config.nodeEnv === "production",
+            sameSite: config.nodeEnv === "production" ? 'none' : 'lax'
         })
 
         res.clearCookie("accessToken", {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax'
+            secure: config.nodeEnv === "production",
+            sameSite: config.nodeEnv === "production" ? 'none' : 'lax'
         })
 
         return res.status(200).json({
