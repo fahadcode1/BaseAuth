@@ -58,8 +58,10 @@ export const sendEmailVerificationOtp = async (user: IUser) => {
     });
 
     const otp = generateOtp();
+    console.log(otp)
     const hashedOtp = await bcrypt.hash(otp, 10);
-
+    const emailToSend = user.pendingEmail || user.email
+    console.log(emailToSend)
     user.emailOtp = hashedOtp;
     user.emailOtpExpiry = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
@@ -68,7 +70,7 @@ export const sendEmailVerificationOtp = async (user: IUser) => {
 
     await transporter.sendMail({
         from: `"${appName}" <${process.env.GMAIL_USER}>`,
-        to: user.email,
+        to: emailToSend,
         subject: `${otp} is your verification code`,
         text: `Your ${appName} verification code is ${otp}. It expires in 10 minutes. Do not share it with anyone.`,
         html: buildOtpEmailHtml(otp, appName),

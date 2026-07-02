@@ -4,6 +4,8 @@ export interface IUser extends Document {
   firstName: string
   lastName: string
   email: string
+  pendingEmail?: string | undefined
+  isVerifiedPendingEmail : boolean
   isVerifiedEmail: boolean
   mobileNumber?: string
   isVerifiedMobileNumber: boolean
@@ -28,6 +30,8 @@ const userSchema = new Schema<IUser>(
       lowercase: true,
       trim: true,
     },
+    pendingEmail: { type: String, default: null },
+    isVerifiedPendingEmail : { type: Boolean, default: false },
     isVerifiedEmail: { type: Boolean, default: false },
     mobileNumber: { type: String, unique: true, required: false, sparse: true },
     isVerifiedMobileNumber: { type: Boolean, default: false },
