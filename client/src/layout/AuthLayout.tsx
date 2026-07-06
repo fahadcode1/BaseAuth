@@ -10,10 +10,31 @@ interface AuthLayoutProps {
 const AuthLayout = ({ title, children }: AuthLayoutProps) => {
   return (
     <div className="auth-layout">
-      <div className="auth-card">
-        {title && <h1 className="auth-title">{title}</h1>}
-        {children ?? <Outlet />}
-      </div>
+      <aside className="auth-panel-brand">
+        <div className="auth-brand-glow" aria-hidden="true" />
+        <div className="auth-brand-content">
+          <span className="auth-brand-mark">◆</span>
+          <h2 className="auth-brand-heading">Authentication, ready from day one.</h2>
+          <p className="auth-brand-copy">
+             Drop BaseAuth into any project and get a production-ready authentication
+             system without rebuilding the basics.
+          </p>
+          <ul className="auth-brand-list">
+            <li>Login, register, and password reset included</li>
+            <li>JWT authentication with refresh token rotation</li>
+            <li>Secure sessions using httpOnly cookies</li>
+          </ul>
+        </div>
+        <span className="auth-brand-footer">© 2026 BaseAuth</span>
+      </aside>
+
+      <section className="auth-panel-form">
+        <div className="auth-form-wrap">
+          <span className="auth-brand">BaseAuth</span>
+          {title && <h1 className="auth-title">{title}</h1>}
+          {children ?? <Outlet />}
+        </div>
+      </section>
     </div>
   );
 };

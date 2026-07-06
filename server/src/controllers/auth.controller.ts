@@ -25,7 +25,7 @@ export const handleregister = async (req : Request, res : Response) => {
         if (isAlreadyRegistered){
             if (!isAlreadyRegistered.isVerifiedEmail){
                 
-                res.status(403).json({
+                return res.status(403).json({
                     success : false,
                     message : "Email not verified. OTP sent to your email.",
                     redirectTo : '/verify-email'
@@ -100,7 +100,7 @@ export const handleVerifyEmail = async (req : Request, res : Response ) => {
         }
 
         if (!user.emailOtpExpiry || user.emailOtpExpiry < new Date(Date.now())){
-            return res.json(400).json({
+            return res.status(400).json({
                 success : false,
                 message : "OTP expired,Please request a new one"
             })

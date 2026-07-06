@@ -30,18 +30,18 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     try {
       const res = await fetch("/api/auth/refresh", {
         method: "POST",
-        credentials: "include", // sends the httpOnly refresh-token cookie
+        credentials: "include", 
       });
 
       if (res.ok) {
         const data = await res.json();
         set({ accessToken: data.accessToken, user: data.user });
       } else {
-        // refresh cookie missing/expired — treat as logged out
+        
         set({ accessToken: null, user: null });
       }
     } catch {
-      // network error / server down — treat as logged out, don't crash the app
+      
       set({ accessToken: null, user: null });
     } finally {
       // must run either way, or App.tsx stays stuck on blank screen forever
