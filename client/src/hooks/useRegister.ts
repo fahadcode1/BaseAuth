@@ -87,10 +87,15 @@ export const useRegister = ()  =>  {
                 password : formData.password
             })
             setIsuccess(true)
-            navigate("verify-account", {state : {email : formData.email}})
+            navigate("/verify-account", {state : {email : formData.email}})
             console.log(result)
         } catch (error: any) {
-    const message = error?.response?.data?.message;
+    const data = error?.response?.data;
+    if (data?.redirectTo === '/verify-email') {
+        navigate("/verify-account", { state: { email: data.email ?? formData.email } })
+        return
+    }
+    const message = data?.message;
     if (message === "EMAIL_TAKEN") {
         setErrors((prev) => ({ ...prev, email: "This email is already registered" }));
     } else if (error?.response?.status === 0) {

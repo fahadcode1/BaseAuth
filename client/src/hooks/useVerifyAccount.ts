@@ -14,7 +14,7 @@ export const useVerifyAccount = () =>   {
     const email = location.state?.email
 
     const saveUser = useAuthStore((s) => s.saveUser)
-    const saveAccessToken = useAuthStore((s) => s.saveAccessToken)
+    
 
     const [otp, setOtp] = useState<string>("");
     const [error, setError] = useState<string | null>(null);
@@ -27,14 +27,19 @@ export const useVerifyAccount = () =>   {
         }
     }, [])
 
-    if (!email) return null
+    if (!email) {
+    return {
+        email: "", otp: "", error: null, resendMessage: null,
+        handleChange, handleSubmit, isLoading: false, handleResend
+    }
+}
      function handleChange(value : string){
         setOtp(value)
         if (error) setError(null)
     }
 
     async function handleSubmit(event : React.FormEvent<HTMLFormElement>){
-        event.preventDefault
+        event.preventDefault()
 
         if (!otp || otp.length < 6 ){
             setError("Enter Valid OTP")
@@ -47,7 +52,7 @@ export const useVerifyAccount = () =>   {
         try {
             const result = await verifyAccount(email, otp)
             saveUser(result.user)
-            saveAccessToken(result.accessToken)
+            
             navigate("/register-success");
         } catch (err : any) {
             setError(err.response?.data?.message || "Invalid OTP. Try again.");
@@ -60,7 +65,7 @@ export const useVerifyAccount = () =>   {
     async function handleResend(){
         setResendMessage(null)
         setError(null)
-
+        setIsLoading(true) 
         try {
             await resendOtp(email)
             setResendMessage("OTP resent to your email.")

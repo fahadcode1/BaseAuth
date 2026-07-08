@@ -69,3 +69,62 @@ export const resendOtp = async (email : string) => {
         throw error
     }
 }
+
+
+interface LoginPayload {
+    email?: string
+    mobileNumber?: string
+    password: string
+}
+
+export const loginUser = async (credentials: LoginPayload) => {
+    try {
+        const response = await fetch(`${BASE_URL}/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(credentials),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw { response: { data, status: response.status } };
+        }
+
+        return data;
+
+    } catch (error: any) {
+        if (error.response) throw error;
+        throw { response: { data: { message: "Network error" }, status: 0 } };
+    }
+}
+
+export interface CurrentUser {
+    firstName: string
+    lastName: string
+    email: string
+    mobileNumber: string
+}
+
+export const getMe = async (): Promise<{ success: boolean; user: CurrentUser }> => {
+    try {
+        const response = await fetch(`${BASE_URL}/user/get-me`, {
+            method: "GET",
+            credentials: "include",
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw { response: { data, status: response.status } };
+        }
+
+        return data;
+
+    } catch (error: any) {
+        if (error.response) throw error;
+        throw { response: { data: { message: "Network error" }, status: 0 } };
+    }
+}
+

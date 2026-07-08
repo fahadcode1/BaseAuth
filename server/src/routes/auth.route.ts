@@ -15,7 +15,7 @@ authRoutes.post('/register', handleregister)
 authRoutes.post('/login', handleLogin)
 authRoutes.post('/rotate-token', handleRotateToken)
 authRoutes.post('/resend-otp', handleResendEmailOtp )
-authRoutes.post('/verify-email', handleVerifyEmail)
+authRoutes.post('/verify-account', handleVerifyEmail)
 authRoutes.post('/logout', handleLogout)
 
 export default authRoutes

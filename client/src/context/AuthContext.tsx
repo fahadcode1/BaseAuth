@@ -14,7 +14,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const user = useAuthStore(state => state.user);
   const saveUser = useAuthStore(state => state.saveUser);
   const saveAccessToken = useAuthStore(state => state.saveAccessToken);
-  const storeLogout = useAuthStore(state => state.logout);
+  const storeLogout = useAuthStore(state => state.handleLogout);
 
   const isLoggedIn = !!user;
 

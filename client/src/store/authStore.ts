@@ -1,4 +1,6 @@
+const BASE_URL = import.meta.env.VITE_API_URL;
 import { create } from "zustand";
+
 
 interface User {
   id: string;
@@ -12,7 +14,7 @@ interface AuthState {
   saveAccessToken: (token: string) => void;
   saveUser: (user: User) => void;
   getAccessToken: () => string | null;
-  logout: () => void;
+  handleLogout: () => Promise<void>; 
   initialize: () => Promise<void>;
 }
 
@@ -28,7 +30,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   initialize: async () => {
     try {
-      const res = await fetch("/api/auth/refresh", {
+      const res = await fetch(`${BASE_URL}/auth/rotate-token`, {
         method: "POST",
         credentials: "include", 
       });
@@ -48,4 +50,18 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       set({ isAuthReady: true });
     }
   },
+
+  handleLogout : async () =>  {
+
+      try {
+         await fetch(`${BASE_URL}/auth/logout`,{
+          method : "POST",
+          credentials :"include"
+        })
+      } catch (error) {
+        console.error("logout error", error)
+      } finally {
+        set({user :null, accessToken : null, isAuthReady : false})
+      }
+  }
 })); 

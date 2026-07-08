@@ -44,7 +44,7 @@ export const VerifyAccountPage = () => {
             <button type="submit" disabled={isLoading}>
                 {isLoading ? "Verifying..." : "Verify"}
             </button>
-            <button type="button" onClick={handleResend}>
+            <button className="reset-otp-btn" type="button" onClick={handleResend}>
                 Resend OTP
             </button>
         </form>

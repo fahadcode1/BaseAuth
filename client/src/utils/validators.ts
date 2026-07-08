@@ -59,5 +59,20 @@ export const validateConfirmPassword = (password : string, confirmPassword : str
     return null
 }
 
+export function validateIdentifier(value: string): string | null {
+    const trimmed = value.trim()
 
+    if (!trimmed) {
+        return "Email or mobile number is required"
+    }
+
+    const isEmail = /\S+@\S+\.\S+/.test(trimmed)
+    const isMobile = /^[6-9]\d{9}$/.test(trimmed)
+
+    if (!isEmail && !isMobile) {
+        return "Enter a valid email or 10-digit mobile number"
+    }
+
+    return null
+}
 

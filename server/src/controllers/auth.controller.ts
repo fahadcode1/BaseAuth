@@ -24,11 +24,12 @@ export const handleregister = async (req : Request, res : Response) => {
             // check if email exists but not verified 
         if (isAlreadyRegistered){
             if (!isAlreadyRegistered.isVerifiedEmail){
-                
+                await sendEmailVerificationOtp(isAlreadyRegistered)
                 return res.status(403).json({
                     success : false,
                     message : "Email not verified. OTP sent to your email.",
-                    redirectTo : '/verify-email'
+                    redirectTo : '/verify-email',
+                    email : isAlreadyRegistered.email
                 })
             }
                 // check if email already exists
@@ -348,7 +349,7 @@ export const handleRotateToken = async (req : Request, res : Response) =>    {
     try {
         const refreshToken = req.cookies.refreshToken
 
-        if (! refreshToken){
+        if (! refreshToken){ 
             return res.status(401).json({
                 success : false,
                 message : "Refresh Token not found"

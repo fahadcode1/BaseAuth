@@ -103,3 +103,49 @@
     grid-template-columns: 1fr;
   }
 }
+
+.reset-otp-btn {
+  background: transparent;
+  border: 1px solid #2b323c;
+  color: #58a6ff;
+  border-radius: 6px;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.reset-otp-btn:hover {
+  background: #1c2128;
+  border-color: #3b4048;
+}
+
+.reset-otp-btn:disabled {
+  color: #6e7681;
+  border-color: #21262d;
+  cursor: not-allowed;
+}
+.go-login-btn {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  background: #238636;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  padding: 0.65rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-top: 0.6rem;
+  transition: background 0.15s ease;
+  box-sizing: border-box;
+}
+
+.go-login-btn:hover {
+  background: #2ea043;
+}
+
+.go-login-btn:active {
+  background: #1f7a30;
+}
