@@ -17,6 +17,7 @@ interface AuthState {
   handleLogout: () => Promise<void>; 
   initialize: () => Promise<void>;
 }
+let initPromise: Promise<void> | null = null;
 
 export const useAuthStore = create<AuthState>()((set, get) => ({
   accessToken: null,
@@ -24,32 +25,34 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   isAuthReady: false,
 
   saveAccessToken: (token) => set({ accessToken: token }),
-  saveUser: (user) => set({ user }),
-  getAccessToken: () => get().accessToken,
-  logout: () => set({ accessToken: null, user: null }),
+  saveUser: (user) => set({ user: user }),
+  getAccessToken: () => get().accessToken,  
 
   initialize: async () => {
+  if (initPromise) return initPromise;
+
+  initPromise = (async () => {
     try {
       const res = await fetch(`${BASE_URL}/auth/rotate-token`, {
         method: "POST",
-        credentials: "include", 
+        credentials: "include",
       });
 
       if (res.ok) {
         const data = await res.json();
-        set({ accessToken: data.accessToken, user: data.user });
+        set({ user: data.user });
       } else {
-        
         set({ accessToken: null, user: null });
       }
     } catch {
-      
       set({ accessToken: null, user: null });
     } finally {
-      // must run either way, or App.tsx stays stuck on blank screen forever
       set({ isAuthReady: true });
     }
-  },
+  })();
+
+  return initPromise;
+},
 
   handleLogout : async () =>  {
 
@@ -61,7 +64,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       } catch (error) {
         console.error("logout error", error)
       } finally {
-        set({user :null, accessToken : null, isAuthReady : false})
+        set({user :null, accessToken : null})
       }
   }
 })); 

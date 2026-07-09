@@ -1,3 +1,12 @@
+:root {
+  --border: #1f232b;
+  --border-soft: #1a1d24;
+  --text: #eef0f3;
+  --text-dim: #565b64;
+  --text-dim2: #868b94;
+  --red: #f0665f;
+}
+
 .page {
   flex: 1;
   display: flex;
@@ -7,43 +16,33 @@
   padding: 64px 56px;
 }
 
-/* loading / error state */
-.page-state {
-  flex: 1;
+.page-state,
+.page-header,
+.page-header-left,
+.page-avatar,
+.page-info-row,
+.logout-btn {
   display: flex;
   align-items: center;
-  justify-content: center;
-  min-height: 100vh;
 }
 
-.page-state-text {
-  color: #868b94;
-  font-size: 14px;
-}
+.page-state { flex: 1; justify-content: center; min-height: 100vh; }
+.page-state-text { color: var(--text-dim2); font-size: 14px; }
+.page-state-error { color: var(--red); }
 
-.page-state-error {
-  color: #f0665f;
-}
-
-/* header */
-.page-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
+.page-header { justify-content: space-between; gap: 16px; }
+.page-header-left { gap: 16px; }
 
 .page-avatar {
   width: 48px;
   height: 48px;
   flex-shrink: 0;
+  justify-content: center;
   border-radius: 10px;
   background: #6c8cff;
   color: #0b0c0f;
   font-size: 18px;
   font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .page-eyebrow {
@@ -51,96 +50,30 @@
   font-size: 11px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #565b64;
+  color: var(--text-dim);
 }
 
-.page-name {
-  margin: 0;
-  font-size: 21px;
-  font-weight: 600;
-  color: #eef0f3;
-}
+.page-name { margin: 0; font-size: 21px; font-weight: 600; color: var(--text); }
 
-/* cards */
 .page-card {
   background: #101217;
-  border: 1px solid #1f232b;
+  border: 1px solid var(--border);
   border-radius: 10px;
   overflow: hidden;
 }
+.page-card-header { padding: 13px 20px; border-bottom: 1px solid var(--border); }
+.page-card-title { font-size: 13px; font-weight: 600; color: #c4c8ce; }
+.page-card-placeholder { border-style: dashed; }
 
-.page-card-header {
-  padding: 13px 20px;
-  border-bottom: 1px solid #1f232b;
-}
+.page-info-grid { margin: 0; padding: 4px 20px; }
+.page-info-row { justify-content: space-between; padding: 13px 0; border-bottom: 1px solid var(--border-soft); }
+.page-info-row:last-child { border-bottom: none; }
+.page-info-row dt { font-family: "SF Mono", "Fira Code", monospace; font-size: 12px; color: var(--text-dim); }
+.page-info-row dd { margin: 0; font-size: 14px; color: var(--text); }
 
-.page-card-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #c4c8ce;
-}
-
-.page-info-grid {
-  margin: 0;
-  padding: 4px 20px;
-}
-
-.page-info-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 13px 0;
-  border-bottom: 1px solid #1a1d24;
-}
-
-.page-info-row:last-child {
-  border-bottom: none;
-}
-
-.page-info-row dt {
-  font-family: "SF Mono", "Fira Code", monospace;
-  font-size: 12px;
-  color: #565b64;
-}
-
-.page-info-row dd {
-  margin: 0;
-  font-size: 14px;
-  color: #eef0f3;
-}
-
-.page-card-placeholder {
-  border-style: dashed;
-}
-
-.page-placeholder-text {
-  padding: 18px 20px;
-  margin: 0;
-  font-size: 13px;
-  color: #565b64;
-}
-
-@media (max-width: 900px) {
-  .page {
-    padding: 40px 24px;
-  }
-}
-
-.page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.page-header-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
+.page-placeholder-text { padding: 18px 20px; margin: 0; font-size: 13px; color: var(--text-dim); }
 
 .logout-btn {
-  display: flex;
-  align-items: center;
   gap: 6px;
   padding: 8px 14px;
   background: transparent;
@@ -149,15 +82,11 @@
   color: #9ca3af;
   font-size: 13px;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  transition: background .15s, color .15s, border-color .15s;
 }
+.logout-btn:hover { background: #21262d; color: #f87171; border-color: #f87171; }
+.logout-btn i { font-size: 16px; }
 
-.logout-btn:hover {
-  background: #21262d;
-  color: #f87171;
-  border-color: #f87171;
-}
-
-.logout-btn i {
-  font-size: 16px;
+@media (max-width: 900px) {
+  .page { padding: 40px 24px; }
 }

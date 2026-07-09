@@ -51,14 +51,24 @@ export default function AuthBaseLanding() {
     <div className="ab-page">
       <nav className="ab-nav">
         <span className="ab-logo">AuthBase</span>
-        <a
-          className="ab-nav-link"
-          href="https://github.com"
-          target="_blank"
-          rel="noreferrer"
-        >
-          GitHub
-        </a>
+        <div className="ab-nav-right">
+          <a
+            className="ab-nav-link"
+            href="https://github.com/fahadcode1/BaseAuth"
+            target="_blank"
+            rel="noreferrer"
+          >
+            GitHub
+          </a>
+          <div className="ab-nav-actions">
+            <a className="ab-btn ab-btn-ghost" href="/login">
+              Log in
+            </a>
+            <a className="ab-btn ab-btn-primary" href="/register">
+              Register
+            </a>
+          </div>
+        </div>
       </nav>
 
       <header className="ab-hero">
@@ -69,6 +79,14 @@ export default function AuthBaseLanding() {
           and password recovery are already built, tested, and ready to drop
           into any project.
         </p>
+        <div className="ab-hero-actions">
+          <a className="ab-btn ab-btn-primary ab-btn-lg" href="/register">
+            Get started
+          </a>
+          <a className="ab-btn ab-btn-ghost ab-btn-lg" href="/login">
+            Log in
+          </a>
+        </div>
       </header>
 
       <section className="ab-section">
@@ -102,7 +120,7 @@ export default function AuthBaseLanding() {
         <p className="ab-footer-text">AuthBase — authentication, done once.</p>
         <a
           className="ab-footer-link"
-          href="https://github.com"
+          href="https://github.com/fahadcode1/BaseAuth"
           target="_blank"
           rel="noreferrer"
         >
