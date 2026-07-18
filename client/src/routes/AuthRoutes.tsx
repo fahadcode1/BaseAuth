@@ -9,6 +9,7 @@ import { ProtectedRoute } from "./ProtectedRoutes"
 import { PublicRoute } from "./PublicRoute"
 import DashboardLayout from "../layout/DashboardLayout"
 import { DashboardPage } from "../components/dashboard/DashboardPage"
+import { EditNamePage } from "../components/accountSettingsPage/EditNamePage"
 
 export const AuthRoutes = () => {
     return (
@@ -27,6 +28,7 @@ export const AuthRoutes = () => {
             <Route element={<ProtectedRoute />}>
                 <Route path="/dashboard" element={<DashboardLayout />}>
                     <Route index element={<DashboardPage />} />
+                    <Route path="account/edit-name" element={<EditNamePage />} />
                 </Route>
             </Route>
         </Routes>

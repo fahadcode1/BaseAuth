@@ -1,0 +1,92 @@
+:root {
+  --border: #1f232b;
+  --text: #eef0f3;
+  --text-dim: #565b64;
+  --text-dim2: #868b94;
+  --red: #f0665f;
+  --accent: #6c8cff;
+}
+
+.edit-card {
+  max-width: 420px;
+  margin: 40px auto;
+  background: #101217;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 28px 24px;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--text-dim2);
+  cursor: pointer;
+  margin-bottom: 16px;
+  font-size: 14px;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+.back-btn:hover { color: var(--text); }
+
+.edit-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 20px;
+  color: var(--text);
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.edit-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-dim2);
+}
+
+.edit-input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #171a20;
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.edit-input::placeholder { color: var(--text-dim); }
+.edit-input:focus { border-color: var(--accent); }
+
+.edit-hint {
+  font-size: 14px;
+  color: var(--text-dim2);
+  margin: 0 0 8px;
+}
+
+.edit-error {
+  color: var(--red);
+  font-size: 13px;
+  margin: 0;
+}
+
+.edit-submit-btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #0b0c0f;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.edit-submit-btn:hover { opacity: 0.9; }
+.edit-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }

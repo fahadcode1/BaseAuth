@@ -1,92 +1,267 @@
-:root {
-  --border: #1f232b;
-  --border-soft: #1a1d24;
-  --text: #eef0f3;
-  --text-dim: #565b64;
-  --text-dim2: #868b94;
-  --red: #f0665f;
-}
+/* ===========================
+   Dashboard Page
+=========================== */
 
 .page {
   flex: 1;
+  padding: 56px 48px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  max-width: 460px;
-  padding: 64px 56px;
+  gap: 32px;
+  color: #eef0f3;
+  box-sizing: border-box;
 }
 
-.page-state,
-.page-header,
-.page-header-left,
-.page-avatar,
-.page-info-row,
-.logout-btn {
+/* ===========================
+   Loading / Error
+=========================== */
+
+.page-state {
+  flex: 1;
+  min-height: 60vh;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
-.page-state { flex: 1; justify-content: center; min-height: 100vh; }
-.page-state-text { color: var(--text-dim2); font-size: 14px; }
-.page-state-error { color: var(--red); }
+.page-state-text {
+  font-size: 14px;
+  color: #8b9099;
+}
 
-.page-header { justify-content: space-between; gap: 16px; }
-.page-header-left { gap: 16px; }
+.page-state-error {
+  color: #f16565;
+}
+
+/* ===========================
+   Header
+=========================== */
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #242833;
+}
+
+.page-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
 
 .page-avatar {
-  width: 48px;
-  height: 48px;
-  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #182b62;
+  color: #7da0ff;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  border-radius: 10px;
-  background: #6c8cff;
-  color: #0b0c0f;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
+  flex-shrink: 0;
 }
 
 .page-eyebrow {
   margin: 0 0 4px;
-  font-size: 11px;
-  letter-spacing: 0.04em;
+  font-size: 12px;
+  color: #8b9099;
   text-transform: uppercase;
-  color: var(--text-dim);
+  letter-spacing: 0.05em;
 }
 
-.page-name { margin: 0; font-size: 21px; font-weight: 600; color: var(--text); }
-
-.page-card {
-  background: #101217;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
+.page-name {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: #f2f4f8;
 }
-.page-card-header { padding: 13px 20px; border-bottom: 1px solid var(--border); }
-.page-card-title { font-size: 13px; font-weight: 600; color: #c4c8ce; }
-.page-card-placeholder { border-style: dashed; }
 
-.page-info-grid { margin: 0; padding: 4px 20px; }
-.page-info-row { justify-content: space-between; padding: 13px 0; border-bottom: 1px solid var(--border-soft); }
-.page-info-row:last-child { border-bottom: none; }
-.page-info-row dt { font-family: "SF Mono", "Fira Code", monospace; font-size: 12px; color: var(--text-dim); }
-.page-info-row dd { margin: 0; font-size: 14px; color: var(--text); }
-
-.page-placeholder-text { padding: 18px 20px; margin: 0; font-size: 13px; color: var(--text-dim); }
+/* ===========================
+   Logout Button
+=========================== */
 
 .logout-btn {
-  gap: 6px;
-  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 18px;
+
   background: transparent;
-  border: 1px solid #30363d;
-  border-radius: 6px;
+  border: 1px solid #313746;
+  border-radius: 8px;
+
+  color: #c8ccd4;
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: #1b1f27;
+  border-color: #4b5364;
+  color: #ff7b7b;
+}
+
+.logout-btn i {
+  font-size: 18px;
+}
+
+/* ===========================
+   Card
+=========================== */
+
+.page-card {
+  width: 100%;
+  max-width: 700px;
+
+  background: #111419;
+  border: 1px solid #242833;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.page-card-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid #242833;
+}
+
+.page-card-title {
+  color: #f2f4f8;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ===========================
+   Info Rows
+=========================== */
+
+.page-info-grid {
+  margin: 0;
+}
+
+.page-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 18px 24px;
+
+  border-bottom: 1px solid #242833;
+}
+
+.page-info-row:last-child {
+  border-bottom: none;
+}
+
+.page-info-row dt {
+  min-width: 140px;
+
+  font-size: 13px;
+  color: #8b9099;
+
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.page-info-row dd {
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+
+  margin: 0;
+
+  color: #eef0f3;
+  font-size: 14px;
+}
+
+.page-info-row dd span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ===========================
+   Edit Button
+=========================== */
+
+.field-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  padding: 12px 12px;
+
+  background: #1a1f27;
+  border: 1px solid #313746;
+  border-radius: 8px;
+  margin-left: 5px;
   color: #9ca3af;
   font-size: 13px;
-  cursor: pointer;
-  transition: background .15s, color .15s, border-color .15s;
-}
-.logout-btn:hover { background: #21262d; color: #f87171; border-color: #f87171; }
-.logout-btn i { font-size: 16px; }
+  font-weight: 700;
 
-@media (max-width: 900px) {
-  .page { padding: 40px 24px; }
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.field-edit-btn:hover {
+  background: #242a35;
+  border-color: #8d9cd1;
+  color: #6c8cff;
+}
+
+.field-edit-btn i {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+@media (max-width: 768px) {
+  .page {
+    padding: 32px 20px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .logout-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .page-info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .page-info-row dt {
+    min-width: auto;
+  }
+
+  .page-info-row dd {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .page-info-row dd span {
+    max-width: calc(100% - 50px);
+  }
 }

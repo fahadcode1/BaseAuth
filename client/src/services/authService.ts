@@ -128,3 +128,6 @@ export const getMe = async (): Promise<{ success: boolean; user: CurrentUser }> 
     }
 }
 
+// export const updateName = async (firstName : string, lastName : string) => {
+
+// }

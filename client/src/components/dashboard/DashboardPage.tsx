@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { useAuthStore } from "../../store/authStore";
 import "./DashboardPage.css";
+import "../accountSettingsPage/AccountEditPage.css"
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
@@ -59,32 +60,68 @@ export const DashboardPage = () => {
 
         <dl className="page-info-grid">
           <div className="page-info-row">
-            <dt>first_name</dt>
-            <dd>{user.firstName}</dd>
+            <dt>name</dt>
+            <dd>
+              <span>{user.firstName} {user.lastName}</span>
+              <button
+                className="field-edit-btn"
+                onClick={() => navigate("/dashboard/account/edit-name")}
+                aria-label="Edit name"
+              >
+                <i className="ti ti-pencil" />
+                <span>Edit Name</span>
+              </button>
+            </dd>
           </div>
-          <div className="page-info-row">
-            <dt>last_name</dt>
-            <dd>{user.lastName}</dd>
-          </div>
+
           <div className="page-info-row">
             <dt>email</dt>
-            <dd>{user.email}</dd>
+            <dd>
+              <span>{user.email}</span>
+              <button
+                className="field-edit-btn"
+                onClick={() => navigate("/dashboard/account/edit-email")}
+                aria-label="Edit email"
+              >
+                <i className="ti ti-pencil" />
+                <span>Edit Email</span>
+              </button>
+            </dd>
           </div>
+
           <div className="page-info-row">
-            <dt>mobile_number</dt>
-            <dd>{user.mobileNumber}</dd>
+            <dt>mobile number</dt>
+            <dd>
+              <span>{user.mobileNumber}</span>
+              <button
+                className="field-edit-btn"
+                onClick={() => navigate("/edit-mobile")}
+                aria-label="Edit mobile number"
+              >
+                <i className="ti ti-pencil" />
+                <span>Edit Mobile Number</span>
+              </button>
+            </dd>
+          </div>
+
+          <div className="page-info-row">
+            <dt>password</dt>
+            <dd>
+              <span>••••••••</span>
+              <button
+                className="field-edit-btn"
+                onClick={() => navigate("/change-password")}
+                aria-label="Change password"
+              >
+                <i className="ti ti-pencil" />
+                <span>Edit Password</span>
+              </button>
+            </dd>
           </div>
         </dl>
-      </div>
-
-      <div className="page-card page-card-placeholder">
-        <div className="page-card-header">
-          <span className="page-card-title">Manage account</span>
-        </div>
-        <p className="page-placeholder-text">
-          Name, email, and password controls go here.
-        </p>
       </div>
     </div>
   );
 };
+
+
