@@ -39,6 +39,9 @@ export const LoginPage = () => {
                 {isLoading ? "Logging in..." : "Log In"}
             </button>
             <label>New here? <Link to="/register" className="authNav-link">Create an account</Link></label>
+            <label>
+            <Link to="/forgot-password" className="authNav-link">Forgot Password?</Link>
+            </label>
         </form>
     )
 }

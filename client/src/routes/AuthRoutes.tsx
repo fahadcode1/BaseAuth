@@ -14,6 +14,8 @@ import { ChangePassword } from "../components/accountSettingsPage/ChangePassword
 import { UpdateMobileNumber } from "../components/accountSettingsPage/UpdateMobileForm"
 import { UpdateEmail } from "../components/accountSettingsPage/UpdateEmailForm"
 import { DeleteAccount } from "../components/accountSettingsPage/DeleteAccount"
+import { ForgotPasswordPage } from "../components/auth/ForgotPasswordPage"
+import { ResetPasswordPage } from "../components/auth/ResetPasswordPage"
 
 export const AuthRoutes = () => {
     return (
@@ -24,6 +26,8 @@ export const AuthRoutes = () => {
                 <Route element={<PublicRoute />}>
                     <Route path="/login" element={<LoginPage />}/>
                     <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                    <Route path="/reset-password" element={<ResetPasswordPage />} />
                 </Route>
                 <Route path="/verify-account" element={<VerifyAccountPage />} />
                 <Route path="/register-success" element={<RegisterSuccessPage/>} />
