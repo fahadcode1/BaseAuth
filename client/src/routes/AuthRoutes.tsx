@@ -10,6 +10,9 @@ import { PublicRoute } from "./PublicRoute"
 import DashboardLayout from "../layout/DashboardLayout"
 import { DashboardPage } from "../components/dashboard/DashboardPage"
 import { EditNamePage } from "../components/accountSettingsPage/EditNamePage"
+import { ChangePassword } from "../components/accountSettingsPage/ChangePasswordForm"
+import { UpdateMobileNumber } from "../components/accountSettingsPage/UpdateMobileForm"
+import { UpdateEmail } from "../components/accountSettingsPage/UpdateEmailForm"
 
 export const AuthRoutes = () => {
     return (
@@ -29,6 +32,9 @@ export const AuthRoutes = () => {
                 <Route path="/dashboard" element={<DashboardLayout />}>
                     <Route index element={<DashboardPage />} />
                     <Route path="account/edit-name" element={<EditNamePage />} />
+                    <Route path="account/change-password" element={<ChangePassword/>} />
+                    <Route path="account/edit-mobile" element={<UpdateMobileNumber/>} />
+                    <Route path="account/edit-email" element={<UpdateEmail/>} />
                 </Route>
             </Route>
         </Routes>

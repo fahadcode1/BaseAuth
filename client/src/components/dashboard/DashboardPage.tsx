@@ -95,7 +95,7 @@ export const DashboardPage = () => {
               <span>{user.mobileNumber}</span>
               <button
                 className="field-edit-btn"
-                onClick={() => navigate("/edit-mobile")}
+                onClick={() => navigate("/dashboard/account/edit-mobile")}
                 aria-label="Edit mobile number"
               >
                 <i className="ti ti-pencil" />
@@ -110,7 +110,7 @@ export const DashboardPage = () => {
               <span>••••••••</span>
               <button
                 className="field-edit-btn"
-                onClick={() => navigate("/change-password")}
+                onClick={() => navigate("/dashboard/account/change-password")}
                 aria-label="Change password"
               >
                 <i className="ti ti-pencil" />

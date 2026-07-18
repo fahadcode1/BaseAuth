@@ -1,53 +1,74 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
+import { validateFirstName, validateLastName } from "../../utils/validators";
 
-import "./AccountEditPage.css"
+import "./AccountEditPage.css";
 
+export const EditNamePage = () => {
+  const BASE_URL = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
+  const { user } = useCurrentUser();
 
-export const EditNamePage = () =>   {
-const BASE_URL = import.meta.env.VITE_API_URL;
-const navigate = useNavigate()
+  const [firstName, setFirstName] = useState(user?.firstName ?? "");
+  const [lastName, setLastName] = useState(user?.lastName ?? "");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-const {user} =  useCurrentUser()
+  function validateAll() {
+    const rawErrors = {
+      firstName: validateFirstName(firstName),
+      lastName: validateLastName(lastName),
+    };
 
+    const activeErrors = Object.fromEntries(
+      Object.entries(rawErrors).filter(([_, v]) => v != null)
+    );
 
-const [firstName, setFirstName] = useState(user?.firstName ?? "")
-const [lastName, setLastName] = useState(user?.lastName ?? "")
-const [isSubmitting, setIsSubmitting] = useState(false)
-const [error, setError] = useState("")
+    if (Object.keys(activeErrors).length > 0) {
+      // pick first error to show, since we only have a single error string state
+      const firstMessage = Object.values(activeErrors)[0];
+      setError(firstMessage as string);
+      return false;
+    }
 
+    return true;
+  }
+  
 
-// FUNCTION handleSubmit(event)
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
 
-const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault() 
-        setError("")
-        setIsSubmitting(true)
+    if (!validateAll()) return;
+
+    setIsSubmitting(true);
 
     try {
-        const res = await fetch(`${BASE_URL}/user/change-name`,{
-            method : "PATCH",
-            credentials : "include",
-            headers : {"Content-Type": "application/json" }, 
-            body : JSON.stringify({
-                 newFirstName: firstName,
-                 newLastName: lastName    
-            })
-        })
-        navigate("/dashboard")
-        if (!res.ok) {
+      const res = await fetch(`${BASE_URL}/user/change-name`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          newFirstName: firstName,
+          newLastName: lastName,
+        }),
+      });
+
+      if (!res.ok) {
         const data = await res.json();
         throw new Error(data.message ?? "Something went wrong");
-        }
+      }
+
+      navigate("/dashboard");
     } catch (err: any) {
-      setError(err?.response?.data?.message ?? "Could not update name");
+      setError(err?.message ?? "Could not update name");
     } finally {
       setIsSubmitting(false);
     }
+  };
 
-}
-return (
+  return (
     <div className="page">
       <div className="page-card edit-card">
         <button className="back-btn" onClick={() => navigate(-1)}>
@@ -85,5 +106,4 @@ return (
       </div>
     </div>
   );
-
-}
+};

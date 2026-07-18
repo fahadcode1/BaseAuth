@@ -216,6 +216,7 @@ export const handleChangePassword = async (req: Request, res: Response) => {
             success: true,
             message: "Password changed successfully"
         })
+        console.log("password changed sucessfully")
 
     } catch (err) {
         console.error("changePassword error:", err)
@@ -230,7 +231,7 @@ export const handleChangePassword = async (req: Request, res: Response) => {
 export const handleChangeMobileNumber = async (req : Request, res : Response) => {
     try {
         if (!req.user || typeof req.user === "string") {
-        return res.status(401).json({ success: false, message: "Unauthorized" })
+            return res.status(401).json({ success: false, message: "Unauthorized" })
         }
         const userId = req.user.userId
 
@@ -252,7 +253,25 @@ export const handleChangeMobileNumber = async (req : Request, res : Response) =>
             })
         }
 
+        if (user.mobileNumber === newMobileNumber){
+            return res.status(400).json({
+                success : false,
+                message : "This is already your registered mobile number"
+            })
+        }
+
+        const existingUser = await userModel.findOne({ mobileNumber: newMobileNumber })
+        if (existingUser) {
+            return res.status(409).json({
+                success : false,
+                message : "Mobile number already registered with another account"
+            })
+        }
+
         user.mobileNumber = newMobileNumber
+        user.emailOtp     = undefined
+        user.emailOtpExpiry = undefined
+        
         await user.save()
 
         return res.status(200).json({
@@ -260,7 +279,13 @@ export const handleChangeMobileNumber = async (req : Request, res : Response) =>
             message : "Mobile number updated successfully"
         })
 
-    } catch (err) {
+    } catch (err : any) {
+        if (err.code === 11000) {
+            return res.status(409).json({
+                success : false,
+                message : "Mobile number already registered with another account"
+            })
+        }
         console.error("Change Mobile Number Error :", err)
         return res.status(500).json({
             success : false,
@@ -306,7 +331,7 @@ export const handleVerifyPendingEmail = async (req: Request, res: Response) => {
             return res.status(401).json({ success: false, message: "Unauthorized" })
         }
         const userId = req.user.userId
-        const { otp } = req.body   // no email needed from body at all
+        const { otp } = req.body   
 
         const user = await userModel.findById(userId)
         if (!user) {

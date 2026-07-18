@@ -47,10 +47,6 @@ export const verifyEmailOTP = async (req : Request, res : Response, next: NextFu
             })
         }
 
-        user.emailOtp     = undefined
-        user.emailOtpExpiry = undefined
-        await user.save()
-
         next()
 
     } catch (err) {

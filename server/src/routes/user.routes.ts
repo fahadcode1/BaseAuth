@@ -22,7 +22,8 @@ userRoutes.post('/verify-email', authMiddleware, handleVerifyPendingEmail)
 userRoutes.patch('/change-mobile', authMiddleware, verifyEmailOTP, handleChangeMobileNumber)
 userRoutes.patch('/change-password', authMiddleware, handleChangePassword)
 userRoutes.patch('/change-name', authMiddleware, handleChangeName)
-userRoutes.patch('/change-email', authMiddleware, handleChangeEmail, handleVerifyPendingEmail)
+userRoutes.patch('/change-email', authMiddleware, handleChangeEmail)
+userRoutes.patch('/verify-pending-email', authMiddleware, handleVerifyPendingEmail)
 userRoutes.delete('/delete-account', authMiddleware, handleDeleteAccount)
 
 export default userRoutes
