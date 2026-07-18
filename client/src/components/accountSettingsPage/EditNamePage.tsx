@@ -2,11 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
 import { validateFirstName, validateLastName } from "../../utils/validators";
+import { api } from "../../lib/api";
 
 import "./AccountEditPage.css";
 
 export const EditNamePage = () => {
-  const BASE_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const { user } = useCurrentUser();
 
@@ -45,20 +45,10 @@ export const EditNamePage = () => {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch(`${BASE_URL}/user/change-name`, {
-        method: "PATCH",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      await api.patch("/user/change-name", {
           newFirstName: firstName,
           newLastName: lastName,
-        }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message ?? "Something went wrong");
-      }
+        })
 
       navigate("/dashboard");
     } catch (err: any) {

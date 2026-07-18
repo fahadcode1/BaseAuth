@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { validateMobileNumber } from "../../utils/validators";
+import { api } from "../../lib/api";
 
 export const UpdateMobileNumber = () => {
-    const BASE_URL = import.meta.env.VITE_API_URL;
     const navigate = useNavigate()
     const [step, setStep] = useState<"start" | "verify">("start");
     const [mobileNumber, setMobileNumber] = useState("")
@@ -15,16 +15,7 @@ export const UpdateMobileNumber = () => {
         setError("")
         setIsSubmitting(true)
         try {
-            const res = await fetch(`${BASE_URL}/user/send-email-otp`, {
-                method: "POST",
-                credentials: "include",
-            });
-
-            if (!res.ok) {
-                const data = await res.json();
-                throw new Error(data.message ?? "Could not send OTP");
-            }
-
+            await api.post("/user/send-email-otp")
             setStep("verify")
         } catch (err: any) {
             setError(err?.message ?? "Could not send OTP");
@@ -45,21 +36,10 @@ export const UpdateMobileNumber = () => {
         setIsSubmitting(true)
 
         try {
-            const res = await fetch(`${BASE_URL}/user/change-mobile`, {
-                method: "PATCH",
-                credentials: "include",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
+            await api.patch("/user/change-mobile",{
                     newMobileNumber: mobileNumber,
-                    otp: otp
-                }),
-            });
-
-            if (!res.ok) {
-                const data = await res.json();
-                throw new Error(data.message ?? "Something went wrong");
-            }
-
+                    otp: otp})
+                
             navigate("/dashboard");
         } catch (err: any) {
             setError(err?.message ?? "Invalid OTP or mobile number");

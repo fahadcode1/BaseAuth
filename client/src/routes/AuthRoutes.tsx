@@ -13,6 +13,7 @@ import { EditNamePage } from "../components/accountSettingsPage/EditNamePage"
 import { ChangePassword } from "../components/accountSettingsPage/ChangePasswordForm"
 import { UpdateMobileNumber } from "../components/accountSettingsPage/UpdateMobileForm"
 import { UpdateEmail } from "../components/accountSettingsPage/UpdateEmailForm"
+import { DeleteAccount } from "../components/accountSettingsPage/DeleteAccount"
 
 export const AuthRoutes = () => {
     return (
@@ -35,6 +36,7 @@ export const AuthRoutes = () => {
                     <Route path="account/change-password" element={<ChangePassword/>} />
                     <Route path="account/edit-mobile" element={<UpdateMobileNumber/>} />
                     <Route path="account/edit-email" element={<UpdateEmail/>} />
+                    <Route path="account/delete-account" element={<DeleteAccount/>} />
                 </Route>
             </Route>
         </Routes>

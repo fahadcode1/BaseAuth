@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { validateConfirmPassword, validatePassword } from "../../utils/validators";
 import "./AccountEditPage.css";
-
+import { api } from "../../lib/api";
 
 export const ChangePassword = () => {
-const BASE_URL = import.meta.env.VITE_API_URL;
+
 const navigate = useNavigate()
 const [oldPassword, setOldPassword] = useState("")
 const [newPassword, setNewPassword] = useState("")
@@ -40,20 +40,10 @@ const activeErrors = Object.fromEntries(
     if (!validateAll()) return
     setIsSubmitting(true)
     try {
-        const res = await fetch(`${BASE_URL}/user/change-password`,{
-            method : "PATCH",
-            credentials : "include",
-            headers: { "Content-Type": "application/json" },
-            body : JSON.stringify({
+      await api.patch("/user/change-password",{
                 oldPassword : oldPassword,
                 newPassword : newPassword
             })
-        })
-        if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message ?? "Something went wrong");
-      }
-
       navigate("/dashboard");
     } catch (err: any) {
       setError(err?.message ?? "Could not update name");

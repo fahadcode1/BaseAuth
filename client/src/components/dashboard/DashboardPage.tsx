@@ -118,6 +118,20 @@ export const DashboardPage = () => {
               </button>
             </dd>
           </div>
+          <div className="page-info-row">
+            <dt>Delete Account</dt>
+            <dd>
+              <span>{user.firstName + " " + user.lastName}</span>
+              <button
+                className="field-edit-btn"
+                onClick={() => navigate("/dashboard/account/delete-account")}
+                aria-label="Edit mobile number"
+              >
+                <i className="ti ti-pencil" />
+                <span>Delete Account</span>
+              </button>
+            </dd>
+          </div>
         </dl>
       </div>
     </div>
