@@ -32,12 +32,10 @@ Most projects need the same auth flow: sign up, verify email, log in, manage you
 | Backend | Node.js + Express + TypeScript |
 | Database | MongoDB (Mongoose) |
 | Auth | JWT (access + refresh tokens), httpOnly cookies |
-| Email/OTP | Nodemailer (free SMTP-based email delivery) |
-
-> **Note:** Update this table if your final stack choices differ (e.g., if you've since migrated a variant to PostgreSQL/Prisma).
+| Email/OTP | Nodemailer via Gmail (free, no paid email service required) |
 
 ## Project Structure
- 
+
 ```
 baseauth/
 ├── client/
@@ -82,7 +80,7 @@ baseauth/
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/<your-username>/baseauth.git
+git clone https://github.com/fahadcode1/BaseAuth.git
 cd baseauth
 ```
 
@@ -106,12 +104,15 @@ Create a `.env` file in `server/`:
 MONGO_URI=
 PORT=
 NODE_ENV=
-JWT_REFRESH_SECRET=
-JWT_REFRESH_EXPIRES_IN=
+
 JWT_ACCESS_SECRET=
 JWT_ACCESS_EXPIRES_IN=
+JWT_REFRESH_SECRET=
+JWT_REFRESH_EXPIRES_IN=
+
 GMAIL_USER=
 GMAIL_APP_PASS=
+
 FRONTEND_URL=
 APP_NAME=
 ```
@@ -158,8 +159,6 @@ npm run dev
 | PATCH | `/api/user/change-password` | Change password |
 | PATCH | `/api/user/change-mobile` | Update phone number |
 | DELETE | `/api/user/delete-account` | Delete account |
-
-> Update these routes/method names to match your actual implementation if they differ.
 
 ## Security Notes
 
