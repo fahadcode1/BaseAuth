@@ -81,7 +81,7 @@ export const UpdateEmail = () => {
                 {step === "otp" && (
                     <form onSubmit={handleVerifyOtp} className="edit-form">
                         <p className="edit-hint">
-                            OTP bhej diya hai <strong>{newEmail}</strong> pe, verify karo neeche.
+                            We've sent an OTP to <strong>{newEmail}</strong>. Please enter it below to verify your email.
                         </p>
                         <label className="edit-label">
                             OTP

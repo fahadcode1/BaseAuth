@@ -1,0 +1,184 @@
+# BaseAuth
+
+A production-ready, full-stack authentication boilerplate built for small to medium-sized projects. Drop it into any project that needs secure, battle-tested auth without reinventing the wheel — register, login, OTP-based email verification, password recovery, and full account management, all wired up and ready to extend.
+
+## Why BaseAuth?
+
+Most projects need the same auth flow: sign up, verify email, log in, manage your account, log out securely. Instead of rebuilding this from scratch (and re-making the same security mistakes) every time, BaseAuth gives you a boilerplate you can clone, configure, and ship.
+
+## Features
+
+- **Register** — new user sign-up with input validation
+- **Email Verification (OTP)** — free OTP-based email verification on signup, no paid email service required
+- **Login** — secure credential-based authentication
+- **Forgot Password** — OTP/email-based password reset flow
+- **Session Management** — refresh token rotation with reuse detection
+- **Account Settings** (post-login):
+  - Change name
+  - Change email (re-verification via OTP)
+  - Change password
+  - Change phone number
+  - Delete account
+- **httpOnly Cookies** — access & refresh tokens never exposed to client-side JS
+- **JWT Authentication** — short-lived access tokens + long-lived refresh tokens
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React (Vite) + TypeScript |
+| State Management | Zustand |
+| Routing | React Router v6 |
+| Backend | Node.js + Express + TypeScript |
+| Database | MongoDB (Mongoose) |
+| Auth | JWT (access + refresh tokens), httpOnly cookies |
+| Email/OTP | Nodemailer (free SMTP-based email delivery) |
+
+> **Note:** Update this table if your final stack choices differ (e.g., if you've since migrated a variant to PostgreSQL/Prisma).
+
+## Project Structure
+ 
+```
+baseauth/
+├── client/
+│   ├── public/
+│   └── src/
+│       ├── assets/
+│       ├── components/
+│       │   ├── accountSettingsPage/
+│       │   ├── auth/
+│       │   ├── dashboard/
+│       │   └── home/
+│       ├── context/
+│       ├── hooks/
+│       ├── layout/
+│       ├── lib/
+│       ├── pages/
+│       ├── routes/
+│       ├── services/
+│       ├── store/
+│       └── utils/
+└── server/
+    └── src/
+        ├── config/
+        ├── controllers/
+        ├── lib/
+        ├── middleware/
+        ├── models/
+        ├── routes/
+        ├── services/
+        ├── types/
+        └── utils/
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18+)
+- MongoDB (local or Atlas)
+- An SMTP email account (e.g., Gmail with an App Password) for sending OTPs
+
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/<your-username>/baseauth.git
+cd baseauth
+```
+
+### 2. Install dependencies
+
+```bash
+# Backend
+cd server
+npm install
+
+# Frontend
+cd ../client
+npm install
+```
+
+### 3. Environment Variables
+
+Create a `.env` file in `server/`:
+
+```env
+MONGO_URI=
+PORT=
+NODE_ENV=
+JWT_REFRESH_SECRET=
+JWT_REFRESH_EXPIRES_IN=
+JWT_ACCESS_SECRET=
+JWT_ACCESS_EXPIRES_IN=
+GMAIL_USER=
+GMAIL_APP_PASS=
+FRONTEND_URL=
+APP_NAME=
+```
+
+Create a `.env` file in `client/`:
+
+```env
+VITE_API_BASE_URL=http://localhost:3000/api
+```
+
+### 4. Run the project
+
+```bash
+# Backend
+cd server
+npm run dev
+
+# Frontend
+cd client
+npm run dev
+```
+
+## API Endpoints
+
+### Auth
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/auth/register` | Register a new user |
+| POST | `/api/auth/verify-account` | Verify email using OTP |
+| POST | `/api/auth/login` | Log in |
+| POST | `/api/auth/logout` | Log out & clear refresh token |
+| POST | `/api/auth/rotate-token` | Rotate access token using refresh token |
+| POST | `/api/auth/forgot-password` | Request OTP for password reset |
+| POST | `/api/auth/reset-password` | Reset password using OTP |
+
+### User (Protected — requires valid access token)
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/user/get-me` | Get current user profile |
+| PATCH | `/api/user/change-name` | Update name |
+| PATCH | `/api/user/change-email` | Update email (triggers OTP re-verification) |
+| PATCH | `/api/user/change-password` | Change password |
+| PATCH | `/api/user/change-mobile` | Update phone number |
+| DELETE | `/api/user/delete-account` | Delete account |
+
+> Update these routes/method names to match your actual implementation if they differ.
+
+## Security Notes
+
+- Access & refresh tokens are stored in **httpOnly, secure cookies** — never in localStorage.
+- Refresh tokens use **rotation with reuse detection** to protect against token replay attacks.
+- OTPs are time-bound and single-use.
+- Passwords are hashed (e.g., bcrypt) before storage — never stored in plain text.
+
+## Roadmap / Possible Extensions
+
+- [ ] Rate limiting on OTP requests
+- [ ] Social login (Google/GitHub OAuth)
+- [ ] Role-based access control (RBAC)
+- [ ] 2FA via authenticator app
+
+## License
+
+MIT — free to use in personal or commercial projects.
+
+---
+
+Built as a reusable boilerplate to save setup time on future projects. Contributions and forks welcome.

@@ -20,6 +20,7 @@ export const DeleteAccount = () => {
         }
 
         setIsSubmitting(true)
+        navigate("/login");
         try {
             await api.delete("/user/delete-account")
             navigate("/login")

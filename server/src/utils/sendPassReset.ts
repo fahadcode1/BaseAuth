@@ -61,7 +61,7 @@ export const sendResetPasswordEmail = async (
     },
   });
 
-  const appName = process.env.APP_NAME || "Your App";
+  const appName = process.env.APP_NAME || "BaseAuth";
 
   await transporter.sendMail({
     from: `"${appName}" <${process.env.GMAIL_USER}>`,

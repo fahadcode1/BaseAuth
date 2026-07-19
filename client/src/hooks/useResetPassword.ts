@@ -51,10 +51,10 @@ export const useResetPassword = () => {
 
     setIsLoading(true);
     try {
-      await api.post(`/auth/reset-password?token=${token}`, {
+      await api.patch(`/auth/reset-password?token=${token}`, {
         password: formData.password,
       });
-      navigate("/login");
+      navigate("/password-changed");
     } catch (err: any) {
       setServerError(err.response?.data?.message ?? "Invalid or expired token");
     } finally {

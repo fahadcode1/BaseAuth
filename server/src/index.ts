@@ -10,7 +10,7 @@ import passwordRoutes from './routes/password.routes'
 import userRoutes from './routes/user.routes'
 
 dns.setServers(["1.1.1.1", "8.8.8.8"])
-const PORT = 8000
+const PORT = process.env.PORT ||8000
 
 const app:Express = express()
 app.use(express.json())

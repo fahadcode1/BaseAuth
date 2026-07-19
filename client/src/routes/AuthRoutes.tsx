@@ -16,6 +16,7 @@ import { UpdateEmail } from "../components/accountSettingsPage/UpdateEmailForm"
 import { DeleteAccount } from "../components/accountSettingsPage/DeleteAccount"
 import { ForgotPasswordPage } from "../components/auth/ForgotPasswordPage"
 import { ResetPasswordPage } from "../components/auth/ResetPasswordPage"
+import { PasswordChangedPage } from "../components/auth/PasswordChangedPage"
 
 export const AuthRoutes = () => {
     return (
@@ -28,6 +29,7 @@ export const AuthRoutes = () => {
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                     <Route path="/reset-password" element={<ResetPasswordPage />} />
+                    <Route path="/password-changed" element={<PasswordChangedPage />} />    
                 </Route>
                 <Route path="/verify-account" element={<VerifyAccountPage />} />
                 <Route path="/register-success" element={<RegisterSuccessPage/>} />

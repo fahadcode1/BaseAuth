@@ -5,7 +5,7 @@ import { IUser } from "../models/userModel";
 
 // generate 6 digit otp
 const generateOtp = () => {
-    return crypto.randomInt(100000, 1000000).toString();
+    return crypto.randomInt(1000, 10000).toString();
 };
 
 const buildOtpEmailHtml = (otp: string, appName: string) => `
@@ -66,7 +66,7 @@ export const sendEmailVerificationOtp = async (user: IUser) => {
     user.emailOtpExpiry = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
 
-    const appName = process.env.APP_NAME || "Your App";
+    const appName = process.env.APP_NAME || "BaseAuth";
 
     await transporter.sendMail({
         from: `"${appName}" <${process.env.GMAIL_USER}>`,
